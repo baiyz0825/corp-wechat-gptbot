@@ -1,0 +1,13 @@
+systemConf:
+  proxy: https://proxy.california.vps.baiyz.top:8843
+  port: 8989
+  log: debug # panic, fatal, error, warn, info, debug, trace
+gptConfig:
+  apikey:
+weConfig:
+  corpid: ww0bec1a3850fbe507
+  corpSecret: uwyyNirMeYtDyB-GoqmYX0WOLFW0xBs3HJCPmmMPlvo
+  agentId: 1000008
+  weApiRCallToken: EptKWfuXh
+  weApiEncodingKey: 1rdbEnMfRBgl38WfZOAgxYNuTrIFHqakofsRoJR8A79
+  weChatApiAddr:  https://qyapi.weixin.qq.com
