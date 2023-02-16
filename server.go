@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"person-bot/handler"
+	"person-bot/logic"
 )
 
 type server struct {
@@ -18,12 +19,17 @@ func newServer() *server {
 	s := &server{
 		mux: http.NewServeMux(),
 	}
-	var routes = map[string]func(http.ResponseWriter, *http.Request){
-		"/test": handler.Testhandler,
-		"/":     handler.WeChatConfirmHandler,
+	// 注册handler && strategy
+	var routes = map[string]http.Handler{
+		"/wx": &handler.WxHandler{
+			WxStrategy: map[string]handler.WxBusStrategy{
+				"chat": &logic.WxGptLogic{},
+				"cmd":  &logic.WxJokeLogic{},
+			},
+		},
 	}
 	for path, routers := range routes {
-		s.mux.HandleFunc(path, routers)
+		s.mux.Handle(path, routers)
 	}
 	return s
 }
