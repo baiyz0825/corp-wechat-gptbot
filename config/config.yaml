@@ -2,6 +2,7 @@ systemConf:
   proxy: https://proxy.california.vps.baiyz.top:8843
   port: 8989
   log: debug # panic, fatal, error, warn, info, debug, trace
+  logPath: ./logs/log
 gptConfig:
   apikey:
 weConfig:

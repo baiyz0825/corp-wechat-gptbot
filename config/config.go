@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/spf13/viper"
-	constx "person-bot/const"
 )
 
 var globalConf *GlobalConf
@@ -40,7 +39,7 @@ type WeChatConfig struct {
 	//  CorpSecret 企业应用Secret
 	CorpSecret string `json:"corpSecret" yaml:"corpSecret"`
 	//  AgentId 应用ID
-	AgentId string `json:"agentId" yaml:"agentId"`
+	AgentId int `json:"agentId" yaml:"agentId"`
 	//  WeApiRCallToken 企业微信消息Token
 	WeApiRCallToken string `json:"weApiRCallToken" yaml:"weApiRCallToken"`
 	//  WeApiEncodingKey 企业微信消息Key
@@ -56,10 +55,10 @@ func LoadConf() error {
 	// viper.SetConfigName("config")
 	// viper.AddConfigPath("./config")
 	if err := v.ReadInConfig(); err != nil {
-		return fmt.Errorf(constx.InitS+"load config file failure , please check you config file:%w", err)
+		return fmt.Errorf("load config file failure , please check you config file:%w", err)
 	}
 	if err := v.Unmarshal(&globalConf); err != nil {
-		return fmt.Errorf(constx.InitS+"load config file failure , please check you config file:%w", err)
+		return fmt.Errorf("load config file failure , please check you config file:%w", err)
 	}
 	return nil
 }
