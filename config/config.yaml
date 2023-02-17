@@ -9,6 +9,6 @@ weConfig:
   corpid: ww0bec1a3850fbe507
   corpSecret: uwyyNirMeYtDyB-GoqmYX0WOLFW0xBs3HJCPmmMPlvo
   agentId: 1000008
-  weApiRCallToken: EptKWfuXh
-  weApiEncodingKey: 1rdbEnMfRBgl38WfZOAgxYNuTrIFHqakofsRoJR8A79
+  weApiRCallToken: seMuv1Ctx6
+  weApiEncodingKey: 2CBN1gUSd0RmLb42BWumJIdHwFsgOlJYiyrN6TbmSbC
   weChatApiAddr:  https://qyapi.weixin.qq.com

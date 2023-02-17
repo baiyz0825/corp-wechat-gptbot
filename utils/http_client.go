@@ -13,7 +13,7 @@ import (
 
 var httpClient *http.Client
 
-func init() {
+func LoadHttpClientConf() {
 	httpClient = &http.Client{
 		Timeout: time.Second * 10,
 	}
@@ -21,7 +21,7 @@ func init() {
 	proxy := config.GetSystemConf().Proxy
 	parseUrl, err := url.Parse(proxy)
 	if err != nil {
-		logrus.Error("代理Url设置错误，本次将不使用代理，请检查代理设置：%w", err)
+		logrus.Error("代理Url设置错误，本次将不使用代理，请检查代理设置：%v", err)
 		httpClient.Transport = &http.Transport{
 			// 跳过证书验证
 			TLSClientConfig:     &tls.Config{InsecureSkipVerify: true},
@@ -59,7 +59,7 @@ func Get(urlStr string, headers map[string]string) ([]byte, error) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			logrus.Error("http client close body err : %w", err)
+			logrus.Error("http client close body err : %v", err)
 		}
 	}(response.Body)
 	// 获取数据

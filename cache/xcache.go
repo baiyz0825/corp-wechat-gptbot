@@ -32,7 +32,7 @@ func GetDataFromCache(key string) interface{} {
 func SetDataToCache(key string, data interface{}, duration time.Duration) bool {
 	err := cacheDb.Add(key, data, duration)
 	if err != nil {
-		log.Error("SetCache failure: %w", err)
+		log.Error("SetCache failure: %v", err)
 		return false
 	}
 	return true

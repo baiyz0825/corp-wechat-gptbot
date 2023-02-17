@@ -1,10 +1,8 @@
 package middleware
 
 import (
-	"fmt"
 	"io"
 	"os"
-	"path"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -15,18 +13,8 @@ var logger *logrus.Logger
 
 // LoggerToFile 日志记录到文件
 func LoggerToFile() gin.HandlerFunc {
-	logFilePath := ""
-	logFileName := ""
-	// 日志文件
-	fileName := path.Join(logFilePath, logFileName)
-	// 写入文件
-	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
-	if err != nil {
-		fmt.Println("err", err)
-	}
 	// 创建多个writer，同时写入控制台文件
 	writes := []io.Writer{
-		file,
 		os.Stdout,
 	}
 	multiWriters := io.MultiWriter(writes...)

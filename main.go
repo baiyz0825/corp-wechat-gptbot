@@ -4,6 +4,7 @@ import (
 	"corp-webot/config"
 	"corp-webot/middleware"
 	"corp-webot/routers"
+	"corp-webot/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -25,6 +26,8 @@ func main() {
 	if err := config.LoadConf(); err != nil {
 		logrus.Fatal(err)
 	}
+	utils.LoadHttpClientConf()
+	utils.LoadWxBizCryptHelper()
 	// Listen and Server in 0.0.0.0:8080
 	r.Run(":" + config.GetSystemConf().Port)
 }

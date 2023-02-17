@@ -55,10 +55,10 @@ func LoadConf() error {
 	// viper.SetConfigName("config")
 	// viper.AddConfigPath("./config")
 	if err := v.ReadInConfig(); err != nil {
-		return fmt.Errorf("load config file failure , please check you config file:%w", err)
+		return fmt.Errorf("load config file failure , please check you config file:%v", err)
 	}
 	if err := v.Unmarshal(&globalConf); err != nil {
-		return fmt.Errorf("load config file failure , please check you config file:%w", err)
+		return fmt.Errorf("load config file failure , please check you config file:%v", err)
 	}
 	return nil
 }
