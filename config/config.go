@@ -29,7 +29,9 @@ type SystemConf struct {
 
 // GptConfig chatGpt api key
 type GptConfig struct {
-	Apikey string `json:"apikey" yaml:"apikey"`
+	Apikey   string `json:"apikey" yaml:"apikey"`
+	UserName string `json:"userName" yaml:"userName"`
+	Passwd   string `json:"passwd" yaml:"passwd"`
 }
 
 // WeChatConfig 微信配置文件

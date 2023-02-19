@@ -5,6 +5,8 @@ systemConf:
   logPath: ./logs/log
 gptConfig:
   apikey:
+  userName: yizhuo0825@gmail.com
+  passwd: adgh267adgh267
 weConfig:
   corpid: ww0bec1a3850fbe507
   corpSecret: uwyyNirMeYtDyB-GoqmYX0WOLFW0xBs3HJCPmmMPlvo
