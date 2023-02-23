@@ -1,4 +1,4 @@
-package services
+package command
 
 import (
 	"time"
@@ -13,10 +13,10 @@ import (
 	"golang.org/x/net/context"
 )
 
-type GPTChatCommand struct {
+type GPTChatService struct {
 }
 
-func (gpt *GPTChatCommand) ExecCommand(data *CommandData, ctx context.Context) {
+func (gpt *GPTChatService) ExecCommand(data *CommandData, ctx context.Context) {
 	// 获取用户请求中的消息
 	if data != nil {
 		logrus.Error("执行微信回掉文本命令失败，不存在命令结构体")
@@ -44,11 +44,11 @@ func (gpt *GPTChatCommand) ExecCommand(data *CommandData, ctx context.Context) {
 	// 封装微信消息体
 	messages := &request.RequestMessageSendMarkdown{
 		RequestMessageSend: request.RequestMessageSend{
-			ToUser:                 "UserID1|UserID2|UserID3",
-			ToParty:                "PartyID1|PartyID2",
-			ToTag:                  "TagID1 | TagID2",
+			ToUser:                 data.FromUser,
+			ToParty:                "",
+			ToTag:                  "",
 			MsgType:                "markdown",
-			AgentID:                1,
+			AgentID:                data.AgentId,
 			EnableDuplicateCheck:   0,
 			DuplicateCheckInterval: 1800,
 		},

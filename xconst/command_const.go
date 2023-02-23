@@ -5,7 +5,8 @@ import (
 )
 
 const (
-	CPT_CMD = "@gpt"
+	CPT_CMD  = "@gpt"
+	HELP_CMD = "@hp"
 )
 
 var (

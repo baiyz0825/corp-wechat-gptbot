@@ -1,4 +1,4 @@
-package services
+package command
 
 import (
 	"errors"
@@ -13,7 +13,8 @@ func init() {
 	// 初始化命令
 	commandSupported = make(map[string]CommonMsgCmd, 10)
 	// 注册命令
-	RegisterCommand(xconst.CPT_CMD, &GPTChatCommand{})
+	RegisterCommand(xconst.CPT_CMD, &GPTChatService{})
+	RegisterCommand(xconst.HELP_CMD, &HelperCommandService{})
 }
 
 type CommandData struct {
@@ -21,14 +22,16 @@ type CommandData struct {
 	FromUser string
 	Msg      string
 	Cmd      string
+	AgentId  int
 }
 
-func NewCommandData(cropId, fromUser, msg, cmd string) *CommandData {
+func NewCommandData(cropId, fromUser, msg, cmd string, agentId int) *CommandData {
 	return &CommandData{
 		CorpID:   cropId,
 		FromUser: fromUser,
 		Msg:      msg,
 		Cmd:      cmd,
+		AgentId:  agentId,
 	}
 }
 

@@ -1,12 +1,15 @@
-package chatgpt
+package wxcallback
 
 import (
 	"net/http"
+	"strconv"
 
-	"corp-webot/services"
+	"corp-webot/services/command"
+	"corp-webot/services/events"
 	"corp-webot/utils/wecom"
 	"github.com/ArtisanCloud/PowerLibs/v3/http/helper"
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/kernel/contract"
+	"github.com/ArtisanCloud/PowerWeChat/v3/src/work/server/handlers/models"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -42,28 +45,43 @@ func RealMsgCallBack(c *gin.Context) {
 			// 开始分发处理
 			go func(event contract.EventInterface) {
 				// 文本消息分发函数。异步处理
-				var contentMsg string
-				err := event.ReadMessage(contentMsg)
+				messageText := models.MessageText{}
+				err := event.ReadMessage(&messageText)
 				if err != nil {
 					logrus.WithError(err).Errorf("处理文本消息过程中，出现读取回掉消息内容出错")
 					return
 				}
 				// 截取命令
-				commandFlag := contentMsg[0:5]
-				realMsg := contentMsg[6:]
+				commandFlag := messageText.Content[0:5]
+				realMsg := messageText.Content[6:]
 				// 获取响应的消息处理函数
-				commandFunc, err := services.GetCommandFunc(commandFlag)
+				commandFunc, err := command.GetCommandFunc(commandFlag)
+				if err != nil {
+					return
+				}
+				agentId, err := strconv.Atoi(messageText.AgentID)
 				if err != nil {
 					return
 				}
 				// 处理消息
 				commandFunc.ExecCommand(
-					services.NewCommandData(event.GetToUserName(), event.GetFromUserName(), realMsg, commandFlag),
+					command.NewCommandData(event.GetToUserName(), event.GetFromUserName(), realMsg, commandFlag, agentId),
 					c,
 				)
 			}(event)
 		case "image":
 			logrus.Debug("接受到来自用户： " + event.GetFromUserName() + "的图片内容消息")
+		case "event":
+			logrus.Debug("接受到来自用户： " + event.GetFromUserName() + "的事件消息")
+			go func(event contract.EventInterface) {
+				eventType := event.GetEvent()
+				// 分发事件处理器
+				commandFunc, err := events.GetCommandFunc(eventType)
+				if err != nil {
+					return
+				}
+				commandFunc.DealEvent(event, c)
+			}(event)
 		default:
 			logrus.Info("接受到来自用户： " + event.GetFromUserName() + "不支持的消息类型请求（" + event.GetMsgType() + ")")
 			return "我还没有学会这个功能呢/::$"
