@@ -9,7 +9,7 @@ import (
 
 var cacheDb *gocache.Cache
 
-func init() {
+func LoadCache() {
 	log.Info("初始化缓存中....")
 	cacheDb = gocache.New(time.Hour, 2*time.Hour)
 	log.Info("初始化缓存成功，默认缓存时间1h，2h清理缓存")

@@ -1,4 +1,4 @@
-package utils
+package wecom
 
 import (
 	"bytes"

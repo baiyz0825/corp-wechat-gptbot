@@ -4,10 +4,8 @@ import (
 	"corp-webot/xerror"
 )
 
-var (
-	TextCommandMap = map[string]bool{
-		"@gpt": true,
-	}
+const (
+	CPT_CMD = "@gpt"
 )
 
 var (
