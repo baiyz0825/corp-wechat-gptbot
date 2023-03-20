@@ -20,6 +20,8 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 RUN echo 'Asia/Shanghai' >/etc/timezone
 # 设置编码
 ENV LANG C.UTF-8
-ENTRYPOINT ["/apps/bot"]
 # 设置卷
 VOLUME ["/apps/config"]
+# 暴露端口
+EXPOSE 50008
+ENTRYPOINT ["/apps/bot"]
