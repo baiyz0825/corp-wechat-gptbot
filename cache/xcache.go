@@ -1,4 +1,4 @@
-package cache
+package xcache
 
 import (
 	"time"
@@ -9,10 +9,10 @@ import (
 
 var cacheDb *gocache.Cache
 
-func LoadCache() {
+func init() {
 	log.Info("初始化缓存中....")
 	cacheDb = gocache.New(time.Hour, 2*time.Hour)
-	log.Info("初始化缓存成功，默认缓存时间1h，2h清理缓存")
+	log.Info("初始化缓存成功，默认2h清理全局缓存")
 }
 
 func GetCacheDb() *gocache.Cache {

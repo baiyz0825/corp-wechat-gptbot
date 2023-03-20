@@ -1,4 +1,4 @@
-package string
+package xstring
 
 import (
 	"fmt"

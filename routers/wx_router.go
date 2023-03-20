@@ -1,14 +1,14 @@
 package routers
 
 import (
-	"corp-webot/controller/wxcallback"
+	"github.com/baiyz0825/corp-webot/controller"
 	"github.com/gin-gonic/gin"
 )
 
 func RegistryWXRouter(r *gin.Engine) {
-	wxApi := r.Group("/wx")
+	gptApi := r.Group("/gpt")
 	{
-		wxApi.GET("", wxcallback.VerifyCallBack)
-		wxApi.POST("", wxcallback.RealMsgCallBack)
+		gptApi.GET("", controller.VerifyCallBack)
+		gptApi.POST("", controller.ChatWithGPT)
 	}
 }

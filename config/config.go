@@ -2,8 +2,6 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/spf13/viper"
 )
 
@@ -22,16 +20,19 @@ type GlobalConf struct {
 // SystemConf 系统配置
 type SystemConf struct {
 	// Proxy 代理地址
-	Proxy string `json:"proxy,omitempty" yaml:"proxy"`
-	Port  string `json:"port" yaml:"port"`
-	Log   string `json:"log" yaml:"log"`
+	Proxy       string `json:"proxy,omitempty" yaml:"proxy"`
+	Port        string `json:"port" yaml:"port"`
+	Log         string `json:"log" yaml:"log"`
+	CallBackUrl string `json:"callBackUrl"`
+	MsgMode     string `json:"msgMode"`
 }
 
 // GptConfig chatGpt api key
 type GptConfig struct {
 	Apikey   string `json:"apikey" yaml:"apikey"`
-	UserName string `json:"userName" yaml:"userName"`
-	Passwd   string `json:"passwd" yaml:"passwd"`
+	Model    string `json:"model" yaml:"model"`
+	UserName string `json:"UserName" yaml:"UserName"`
+	URL      string `json:"url" yaml:"url"`
 }
 
 // WeChatConfig 微信配置文件
@@ -51,18 +52,20 @@ type WeChatConfig struct {
 }
 
 // LoadConf  加载配置文件
-func LoadConf() error {
+func init() {
 	v := viper.New()
-	v.SetConfigFile("./config/config.yaml")
+	v.SetConfigType("yaml")
+	v.AddConfigPath("./config/")
+	v.SetConfigName("config")
 	// viper.SetConfigName("config")
 	// viper.AddConfigPath("./config")
+
 	if err := v.ReadInConfig(); err != nil {
-		return fmt.Errorf("load config file failure , please check you config file:%v", err)
+		panic(err)
 	}
 	if err := v.Unmarshal(&globalConf); err != nil {
-		return fmt.Errorf("load config file failure , please check you config file:%v", err)
+		panic(err)
 	}
-	return nil
 }
 
 func GetWechatConf() *WeChatConfig {
