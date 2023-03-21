@@ -20,8 +20,7 @@ env:
 
 
 jobs:
-  build:
-
+  buildAndPubilsh:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -38,20 +37,20 @@ jobs:
       # https://github.com/sigstore/cosign-installer
       - name: 安装登陆组件 cosign
         if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@latest
+        uses: sigstore/cosign-installer@main
         with:
           cosign-release: 'v1.13.1'
 
 
       # Workaround: https://github.com/docker/build-push-action/issues/461
       - name: 初始化构建容器
-        uses: docker/setup-buildx-action@latest
+        uses: docker/setup-buildx-action@v2.5.0
 
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: 登入仓库 ${{ env.REGISTRY }}
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@latest
+        uses: docker/login-action@v2.1.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -61,7 +60,7 @@ jobs:
       # https://github.com/docker/metadata-action
       - name: 解析Docker头 metadata
         id: meta
-        uses: docker/metadata-action@latest
+        uses: docker/metadata-action@v4.3.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
@@ -69,7 +68,7 @@ jobs:
       # https://github.com/docker/build-push-action
       - name: 构建并推送
         id: build-and-push
-        uses: docker/build-push-action@latest
+        uses: docker/build-push-action@v4.0.0
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
