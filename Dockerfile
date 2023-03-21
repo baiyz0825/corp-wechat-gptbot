@@ -7,14 +7,14 @@ ENV GO111MODULE=on \
     GOARCH=amd64 \
 	GOPROXY="https://goproxy.cn,direct"
 WORKDIR /apps
-COPY ./corp-webot /apps
+COPY . /apps
 RUN cd /apps && go build -o bot
 
 # 打包
 FROM alpine:latest
 WORKDIR /apps
-COPY --form=buildState /apps/bot /apps/
-COPY --form=buildState /apps/config/config.yaml /apps/config/
+COPY --from=buildState /apps/bot /apps/
+COPY --from=buildState /apps/config/config.yaml.example /apps/config/
 # 设置时区为上海
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 RUN echo 'Asia/Shanghai' >/etc/timezone
@@ -23,5 +23,5 @@ ENV LANG C.UTF-8
 # 设置卷
 VOLUME ["/apps/config"]
 # 暴露端口
-EXPOSE 50008
+EXPOSE 50008 7890
 ENTRYPOINT ["/apps/bot"]

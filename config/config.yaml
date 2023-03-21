@@ -1,5 +1,5 @@
 systemConf:
-  proxy: http://localhost:7890 # http代理地址
+  proxy: http://192.168.0.44:7890 # http代理地址
   port: 50008 # 允许端口
   log: debug # panic, fatal, error, warn, info, debug, trace
   logPath: ./logs/log #日志文件位置
