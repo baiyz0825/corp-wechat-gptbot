@@ -23,5 +23,5 @@ ENV LANG C.UTF-8
 # 设置卷
 VOLUME ["/apps/config"]
 # 暴露端口
-EXPOSE 50008 7890
+EXPOSE 50008
 ENTRYPOINT ["/apps/bot"]
