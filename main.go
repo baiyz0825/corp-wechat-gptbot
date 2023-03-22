@@ -4,6 +4,7 @@ import (
 	"github.com/baiyz0825/corp-webot/config"
 	"github.com/baiyz0825/corp-webot/middleware"
 	"github.com/baiyz0825/corp-webot/routers"
+	"github.com/baiyz0825/corp-webot/utils/xstring"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,6 +21,8 @@ func loadGin() *gin.Engine {
 
 func main() {
 	r := loadGin()
+	// logo
+	xstring.GenLogoAscii("GPT-BOT", "green")
 	// 启动gin
-	r.Run(":" + config.GetSystemConf().Port)
+	_ = r.Run(":" + config.GetSystemConf().Port)
 }
