@@ -2,6 +2,8 @@
 package config
 
 import (
+	"time"
+
 	"github.com/spf13/viper"
 )
 
@@ -29,10 +31,12 @@ type SystemConf struct {
 
 // GptConfig chatGpt api key
 type GptConfig struct {
-	Apikey   string `json:"apikey" yaml:"apikey"`
-	Model    string `json:"model" yaml:"model"`
-	UserName string `json:"UserName" yaml:"UserName"`
-	URL      string `json:"url" yaml:"url"`
+	Apikey            string        `json:"apikey" yaml:"apikey"`
+	Model             string        `json:"model" yaml:"model"`
+	UserName          string        `json:"UserName" yaml:"UserName"`
+	URL               string        `json:"url" yaml:"url"`
+	ContextNumber     int           `json:"contextNumber" yaml:"contextNumber"`
+	ContextExpireTime time.Duration `json:"contextExpireTime" yaml:"contextExpireTime"`
 }
 
 // WeChatConfig 微信配置文件

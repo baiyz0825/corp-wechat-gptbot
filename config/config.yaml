@@ -10,6 +10,8 @@ gptConfig:
   model: gpt-3.5-turbo # 对话模型
   UserName: jgwecbaap # 用户名
   url: https://api.openai.com/v1 # 请求基地址
+  contextNumber: 10 #支持的上下文数量
+  contextExpireTime: 10 #上下文存储时间
 weConfig:
   corpid: ww0bec1a3850fbe507 # 企业id
   corpSecret: XC5l4D-fxgLuUeyqGlNH9gOvBjucQOWN_DCyOi04CMc #应用密码

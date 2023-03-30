@@ -37,3 +37,11 @@ func SetDataToCache(key string, data interface{}, duration time.Duration) bool {
 	}
 	return true
 }
+
+// GetUserCacheKey
+// @Description: 生成上下文key
+// @param keyFactor
+// @return string
+func GetUserCacheKey(keyFactor string) string {
+	return "gpt_chat/" + keyFactor + "/" + "context"
+}

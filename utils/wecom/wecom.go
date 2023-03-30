@@ -7,7 +7,7 @@ import (
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/work/message/request"
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/work/message/response"
 	"github.com/baiyz0825/corp-webot/config"
-	"github.com/baiyz0825/corp-webot/model"
+	"github.com/baiyz0825/corp-webot/to"
 	"github.com/sbzhu/weworkapi_golang/wxbizmsgcrypt"
 	"github.com/sirupsen/logrus"
 )
@@ -52,7 +52,7 @@ func LoadWxUtils() {
 }
 
 // GetReVerifyCallBack 从微信回调解析请求数据
-func GetReVerifyCallBack(q model.CallBackParams) []byte {
+func GetReVerifyCallBack(q to.CallBackParams) []byte {
 	msg, cryptErr := wxCrypt.VerifyURL(q.MsgSignature, q.TimeStamp, q.Nonce, q.Echostr)
 	if cryptErr != nil {
 		logrus.Errorf("验证Url出错（回调消息解密错误）：%v", cryptErr)
@@ -83,7 +83,7 @@ func CryptMessage(respData, reqTimestamp, reqNonce string) string {
 }
 
 // SendMarkdownToUSer 发送Markdown消息
-func SendMarkdownToUSer(data model.MsgContent, respMsg string) *response.ResponseMessageSend {
+func SendMarkdownToUSer(data to.MsgContent, respMsg string) *response.ResponseMessageSend {
 	// 封装微信消息体
 	messages := &request.RequestMessageSendMarkdown{
 		RequestMessageSend: request.RequestMessageSend{
@@ -109,7 +109,7 @@ func SendMarkdownToUSer(data model.MsgContent, respMsg string) *response.Respons
 }
 
 // SendMarkdownToUSer 发送Markdown消息
-func SendTextToUSer(data model.MsgContent, respMsg string) *response.ResponseMessageSend {
+func SendTextToUSer(data to.MsgContent, respMsg string) *response.ResponseMessageSend {
 	// 封装微信消息体
 	messages := &request.RequestMessageSendText{
 		RequestMessageSend: request.RequestMessageSend{

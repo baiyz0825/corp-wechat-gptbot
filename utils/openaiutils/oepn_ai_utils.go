@@ -19,17 +19,13 @@ func init() {
 }
 
 // SendReqAndGetResp 发送请求
-func SendReqAndGetResp(msg string) string {
+func SendReqAndGetResp(msg []openai.ChatCompletionMessage) string {
+	// 获取上下文数据
 	data := openai.ChatCompletionRequest{
-		Model: config.GetGptConf().Model,
-		Messages: []openai.ChatCompletionMessage{
-			{
-				Role:    "user",
-				Content: msg,
-			},
-		},
-		Stream: false,
-		User:   config.GetGptConf().UserName,
+		Model:    config.GetGptConf().Model,
+		Messages: msg,
+		Stream:   false,
+		User:     config.GetGptConf().UserName,
 	}
 	response, err := openaiClient.CreateChatCompletion(context.Background(), data)
 	if err != nil {

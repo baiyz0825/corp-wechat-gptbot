@@ -1,4 +1,4 @@
-package model
+package to
 
 // CallBackParams 回调参数验证model
 type CallBackParams struct {
