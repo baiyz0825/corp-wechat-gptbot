@@ -5,6 +5,21 @@ systemConf:
   logPath: ./logs/log #日志文件位置
   callBackUrl: http://127.0.0.1 # 回调地址
   msgMode: markdown # markdown 或者 text
+  logConf:
+    logLevel: "debug"
+    logOutPutPath: "./log/"
+    logDirMaxSizeG: 1
+    logDirMaxFileCount: 10
+    logFilePrefix: "crop-bot-run"
+    logFileSuffix: .log
+    logFileDateFmt: "2006-01-02 15:04:05"
+    logFileMaxSizeM: 14
+    logFileRotationCount: 10
+    logReportCaller: true
+    logLevelReportCaller:
+      - error
+    logFormatter: text
+    webLogFilePrefix: "sys"
 gptConfig:
   apikey: xxxx # openapi key
   model: gpt-3.5-turbo # 对话模型

@@ -22,11 +22,21 @@ type GlobalConf struct {
 // SystemConf 系统配置
 type SystemConf struct {
 	// Proxy 代理地址
-	Proxy       string `json:"proxy,omitempty" yaml:"proxy"`
-	Port        string `json:"port" yaml:"port"`
-	Log         string `json:"log" yaml:"log"`
-	CallBackUrl string `json:"callBackUrl"`
-	MsgMode     string `json:"msgMode"`
+	Proxy       string     `json:"proxy,omitempty" yaml:"proxy"`
+	Port        string     `json:"port" yaml:"port"`
+	CallBackUrl string     `json:"callBackUrl"`
+	MsgMode     string     `json:"msgMode"`
+	LogConf     LoggerConf `json:"logConf" yaml:"logConf"`
+}
+
+type LoggerConf struct {
+	LogLevel             string `json:"logLevel,omitempty" yaml:"logLevel"`
+	LogOutPutMode        string `json:"logOutPutMode" yaml:"logOutPutMode"`
+	LogOutPutPath        string `json:"logOutPutPath,omitempty" yaml:"logOutPutPath"`
+	LogFileDateFmt       string `json:"logFileDateFmt,omitempty" yaml:"logFileDateFmt"`
+	LogFileMaxSizeM      int64  `json:"logFileMaxSizeM,omitempty" yaml:"logFileMaxSizeM"`
+	LogFileRotationCount uint   `json:"logFileRotationCount,omitempty" yaml:"logFileRotationCount"`
+	LogFormatter         string `json:"logFormatter,omitempty" yaml:"logFormatter"`
 }
 
 // GptConfig chatGpt api key

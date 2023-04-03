@@ -3,16 +3,16 @@ package xcache
 import (
 	"time"
 
+	"github.com/baiyz0825/corp-webot/utils/xlog"
 	gocache "github.com/patrickmn/go-cache"
-	log "github.com/sirupsen/logrus"
 )
 
 var cacheDb *gocache.Cache
 
 func init() {
-	log.Info("初始化缓存中....")
+	xlog.Log.Info("初始化缓存中....")
 	cacheDb = gocache.New(time.Hour, 2*time.Hour)
-	log.Info("初始化缓存成功，默认2h清理全局缓存")
+	xlog.Log.Info("初始化缓存成功，默认2h清理全局缓存")
 }
 
 func GetCacheDb() *gocache.Cache {
@@ -32,7 +32,7 @@ func GetDataFromCache(key string) interface{} {
 func SetDataToCache(key string, data interface{}, duration time.Duration) bool {
 	err := cacheDb.Add(key, data, duration)
 	if err != nil {
-		log.Error("SetCache failure: %v", err)
+		xlog.Log.Error("SetCache failure: %v", err)
 		return false
 	}
 	return true

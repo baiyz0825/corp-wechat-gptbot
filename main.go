@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/baiyz0825/corp-webot/config"
+	"github.com/baiyz0825/corp-webot/dao"
 	"github.com/baiyz0825/corp-webot/middleware"
 	"github.com/baiyz0825/corp-webot/routers"
 	"github.com/baiyz0825/corp-webot/utils/xstring"
@@ -25,4 +26,6 @@ func main() {
 	xstring.GenLogoAscii("GPT-BOT", "green")
 	// 启动gin
 	_ = r.Run(":" + config.GetSystemConf().Port)
+	// 关闭后置操作
+	dao.CloseDb()
 }

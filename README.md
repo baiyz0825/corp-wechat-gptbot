@@ -57,3 +57,22 @@ docker run -d \
   --restart=always \
   ghcr.io/baiyz0825/corp-webot:main
 ```
+3. 数据表创建
+```sqlite
+create table if not exists "users" (
+    id          INTEGER
+        primary key autoincrement,
+    name        CHAR(50) not null ,
+    sys_prompt  CHAR(512),
+    update_time BIGINT
+);
+create table if not exists "context"
+(
+    id          INTEGER
+        primary key autoincrement,
+    name        CHAR(50) not null,
+    context_msg CHAR(512),
+    update_time BIGINT
+);
+
+```

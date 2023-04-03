@@ -5,14 +5,14 @@ import (
 
 	"github.com/baiyz0825/corp-webot/config"
 	"github.com/baiyz0825/corp-webot/utils/xhttp"
+	"github.com/baiyz0825/corp-webot/utils/xlog"
 	"github.com/sashabaranov/go-openai"
-	"github.com/sirupsen/logrus"
 )
 
 var openaiClient *openai.Client
 
 func init() {
-	logrus.Info("初始化openai工具SDK......")
+	xlog.Log.Info("初始化openai工具SDK......")
 	clientConfig := openai.DefaultConfig(config.GetGptConf().Apikey)
 	clientConfig.HTTPClient = &xhttp.HttpClient
 	openaiClient = openai.NewClientWithConfig(clientConfig)
@@ -29,11 +29,11 @@ func SendReqAndGetResp(msg []openai.ChatCompletionMessage) string {
 	}
 	response, err := openaiClient.CreateChatCompletion(context.Background(), data)
 	if err != nil {
-		logrus.Errorf("CreateCompletionStream returned error: %v", err)
+		xlog.Log.Errorf("CreateCompletionStream returned error: %v", err)
 		return ""
 	}
 
-	logrus.WithField("data:", response).Info("获取的数据是：")
+	xlog.Log.WithField("data:", response).Info("获取的数据是：")
 
 	return response.Choices[0].Message.Content
 }

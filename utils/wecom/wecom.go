@@ -8,8 +8,8 @@ import (
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/work/message/response"
 	"github.com/baiyz0825/corp-webot/config"
 	"github.com/baiyz0825/corp-webot/to"
+	"github.com/baiyz0825/corp-webot/utils/xlog"
 	"github.com/sbzhu/weworkapi_golang/wxbizmsgcrypt"
-	"github.com/sirupsen/logrus"
 )
 
 var wxCrypt *wxbizmsgcrypt.WXBizMsgCrypt
@@ -22,7 +22,7 @@ func init() {
 }
 
 func LoadWeComAppConf() {
-	logrus.Info("初始化企业微信助手......")
+	xlog.Log.Info("初始化企业微信助手......")
 	app, err := work.NewWork(&work.UserConfig{
 		CorpID:  config.GetWechatConf().Corpid,     // 企业微信的app id，所有企业微信共用一个。
 		AgentID: config.GetWechatConf().AgentId,    // 内部应用的app id
@@ -40,14 +40,14 @@ func LoadWeComAppConf() {
 		// }),
 	})
 	if err != nil {
-		logrus.WithError(err).Error("初始化企业微信助手失败！")
+		xlog.Log.WithError(err).Error("初始化企业微信助手失败！")
 		panic(err)
 	}
 	WeComApp = app
 }
 
 func LoadWxUtils() {
-	logrus.Info("初始化微信工具包......")
+	xlog.Log.Info("初始化微信工具包......")
 	wxCrypt = wxbizmsgcrypt.NewWXBizMsgCrypt(config.GetWechatConf().WeApiRCallToken, config.GetWechatConf().WeApiEncodingKey, config.GetWechatConf().Corpid, wxbizmsgcrypt.XmlType)
 }
 
@@ -55,10 +55,10 @@ func LoadWxUtils() {
 func GetReVerifyCallBack(q to.CallBackParams) []byte {
 	msg, cryptErr := wxCrypt.VerifyURL(q.MsgSignature, q.TimeStamp, q.Nonce, q.Echostr)
 	if cryptErr != nil {
-		logrus.Errorf("验证Url出错（回调消息解密错误）：%v", cryptErr)
+		xlog.Log.Errorf("验证Url出错（回调消息解密错误）：%v", cryptErr)
 		return []byte("")
 	}
-	logrus.Info("解析的回调字符为：", string(msg))
+	xlog.Log.Info("解析的回调字符为：", string(msg))
 	return msg
 }
 
@@ -66,7 +66,7 @@ func GetReVerifyCallBack(q to.CallBackParams) []byte {
 func DeCryptMsg(cryptMsg []byte, msgSignature, timeStamp, nonce string) []byte {
 	msg, cryptErr := wxCrypt.DecryptMsg(msgSignature, timeStamp, nonce, cryptMsg)
 	if cryptErr != nil {
-		logrus.Errorf("回调消息解密错误：%v", cryptErr)
+		xlog.Log.Errorf("回调消息解密错误：%v", cryptErr)
 		return nil
 	}
 	return msg
@@ -76,7 +76,7 @@ func DeCryptMsg(cryptMsg []byte, msgSignature, timeStamp, nonce string) []byte {
 func CryptMessage(respData, reqTimestamp, reqNonce string) string {
 	encryptMsg, cryptErr := wxCrypt.EncryptMsg(respData, reqTimestamp, reqNonce)
 	if cryptErr != nil {
-		logrus.Errorf("消息加密错误：%v", cryptErr)
+		xlog.Log.Errorf("消息加密错误：%v", cryptErr)
 		return ""
 	}
 	return string(encryptMsg)
@@ -102,7 +102,7 @@ func SendMarkdownToUSer(data to.MsgContent, respMsg string) *response.ResponseMe
 	// 发送微信消息
 	resp, err := WeComApp.Message.SendMarkdown(context.Background(), messages)
 	if err != nil {
-		logrus.Errorf("创建微信发送消息内容失败：%v", err)
+		xlog.Log.Errorf("创建微信发送消息内容失败：%v", err)
 		return nil
 	}
 	return resp
@@ -130,7 +130,7 @@ func SendTextToUSer(data to.MsgContent, respMsg string) *response.ResponseMessag
 	// 发送微信消息
 	resp, err := WeComApp.Message.SendText(context.Background(), messages)
 	if err != nil {
-		logrus.Errorf("创建微信发送消息内容失败：%v", err)
+		xlog.Log.Errorf("创建微信发送消息内容失败：%v", err)
 		return nil
 	}
 	return resp
