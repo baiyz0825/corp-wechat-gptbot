@@ -7,19 +7,12 @@ systemConf:
   msgMode: markdown # markdown 或者 text
   logConf:
     logLevel: "debug"
-    logOutPutPath: "./log/"
-    logDirMaxSizeG: 1
-    logDirMaxFileCount: 10
-    logFilePrefix: "crop-bot-run"
-    logFileSuffix: .log
+    logOutPutMode: console #console file both
+    logOutPutPath: "./log/crop-bot-run.log"
     logFileDateFmt: "2006-01-02 15:04:05"
     logFileMaxSizeM: 14
     logFileRotationCount: 10
-    logReportCaller: true
-    logLevelReportCaller:
-      - error
-    logFormatter: text
-    webLogFilePrefix: "sys"
+    logFormatter: text # text json
 gptConfig:
   apikey: xxxx # openapi key
   model: gpt-3.5-turbo # 对话模型
