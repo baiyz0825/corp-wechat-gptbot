@@ -110,7 +110,7 @@ func CreateNewContextWithSysPrompt(userID string) *model.MessageContext {
 		return nil
 	}
 	var sysPrompt openai.ChatCompletionMessage
-	if user != nil {
+	if len(user.SysPrompt) != 0 {
 		sysPrompt = model.NewSystemMsg(user.SysPrompt)
 	} else {
 		sysPrompt = model.NewSystemMsg(xconst.PROMPT_DEFAULT)

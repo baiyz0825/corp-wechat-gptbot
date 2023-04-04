@@ -39,6 +39,7 @@ func (c ContextCommand) Exec(userData to.MsgContent) bool {
 		}
 		msgContext = context
 	}
+	// 存储db context
 	msgContextJson, err := json.Marshal(msgContext)
 	if err != nil {
 		xlog.Log.WithError(err).WithField("反序列化数据是", msgContextJson).
@@ -54,5 +55,10 @@ func (c ContextCommand) Exec(userData to.MsgContent) bool {
 	}
 	// 删除缓存
 	xcache.GetCacheDb().Delete(msgContext.Key)
+	// 删除用户设置的prompt
+	err = dao.UpdateUser("", userData.ToUsername, dao.DB)
+	if err != nil {
+		xlog.Log.WithError(err).WithField("用户:", userData.ToUsername).Error("删除用户此次设置prompt失败")
+	}
 	return true
 }
