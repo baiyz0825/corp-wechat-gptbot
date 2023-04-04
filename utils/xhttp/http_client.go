@@ -11,11 +11,11 @@ import (
 	"github.com/baiyz0825/corp-webot/utils/xlog"
 )
 
-var HttpClient http.Client
+var HttpClient *http.Client
 
 func init() {
 	xlog.Log.Info("初始化HTTP客户端......")
-	HttpClient = http.Client{
+	HttpClient = &http.Client{
 		Timeout: time.Second * 60,
 	}
 	// 检查是否配置代理

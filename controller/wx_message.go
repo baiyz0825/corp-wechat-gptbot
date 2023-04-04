@@ -58,6 +58,7 @@ func ChatWithGPT(c *gin.Context) {
 		}
 		// 检查用户是否存在，不存在创建
 		if !dao.CheckUserAndCreate(userData.ToUsername) {
+			xlog.Log.WithField("用户信息", userData.ToUsername).Errorf("创建用户失败")
 			return
 		}
 		// 处理数据

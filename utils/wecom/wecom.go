@@ -3,12 +3,15 @@ package wecom
 import (
 	"context"
 
+	"github.com/ArtisanCloud/PowerWeChat/v3/src/kernel/power"
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/work"
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/work/message/request"
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/work/message/response"
 	"github.com/baiyz0825/corp-webot/config"
 	"github.com/baiyz0825/corp-webot/to"
 	"github.com/baiyz0825/corp-webot/utils/xlog"
+	"github.com/baiyz0825/corp-webot/utils/xstring"
+	"github.com/baiyz0825/corp-webot/xconst"
 	"github.com/sbzhu/weworkapi_golang/wxbizmsgcrypt"
 )
 
@@ -83,11 +86,11 @@ func CryptMessage(respData, reqTimestamp, reqNonce string) string {
 }
 
 // SendMarkdownToUSer 发送Markdown消息
-func SendMarkdownToUSer(data to.MsgContent, respMsg string) *response.ResponseMessageSend {
+func SendMarkdownToUSer(userName string, respMsg string) *response.ResponseMessageSend {
 	// 封装微信消息体
 	messages := &request.RequestMessageSendMarkdown{
 		RequestMessageSend: request.RequestMessageSend{
-			ToUser:                 data.FromUsername,
+			ToUser:                 userName,
 			ToParty:                "",
 			ToTag:                  "",
 			MsgType:                "markdown",
@@ -96,7 +99,7 @@ func SendMarkdownToUSer(data to.MsgContent, respMsg string) *response.ResponseMe
 			DuplicateCheckInterval: 1800,
 		},
 		Markdown: &request.RequestMarkdown{
-			Content: respMsg,
+			Content: xstring.TransBytesToMarkdownStr(respMsg),
 		},
 	}
 	// 发送微信消息
@@ -108,12 +111,12 @@ func SendMarkdownToUSer(data to.MsgContent, respMsg string) *response.ResponseMe
 	return resp
 }
 
-// SendMarkdownToUSer 发送Markdown消息
-func SendTextToUSer(data to.MsgContent, respMsg string) *response.ResponseMessageSend {
+// SendTextToUSer 发送Markdown消息
+func SendTextToUSer(userName string, respMsg string) *response.ResponseMessageSend {
 	// 封装微信消息体
 	messages := &request.RequestMessageSendText{
 		RequestMessageSend: request.RequestMessageSend{
-			ToUser:                 data.FromUsername,
+			ToUser:                 userName,
 			ToParty:                "",
 			ToTag:                  "",
 			MsgType:                "text",
@@ -131,6 +134,46 @@ func SendTextToUSer(data to.MsgContent, respMsg string) *response.ResponseMessag
 	resp, err := WeComApp.Message.SendText(context.Background(), messages)
 	if err != nil {
 		xlog.Log.Errorf("创建微信发送消息内容失败：%v", err)
+		return nil
+	}
+	return resp
+}
+
+// SendImageToUser
+// @Description: 发送制定二进制图片数据给用户
+// @param data
+// @param imageExt
+// @param userName
+// @return *response.ResponseMessageSend
+func SendImageToUser(data []byte, imageExt string, userName string) *response.ResponseMessageSend {
+	ctx := context.Background()
+	dataFrom := &power.HashMap{
+		"name":  userName + "_" + xstring.GenerateRandomStr() + imageExt,
+		"value": data,
+	}
+	tempImageResp, err := WeComApp.Media.UploadTempImage(ctx, "", dataFrom)
+	if err != nil {
+		xlog.Log.WithError(err).WithField("用户:", userName).WithField("微信临时素材响应:", tempImageResp).Error("上传临时图片素材失败")
+		return nil
+	}
+	// 发送图片消息
+	message := &request.RequestMessageSendImage{
+		RequestMessageSend: request.RequestMessageSend{
+			ToUser:                 userName,
+			ToParty:                "",
+			ToTag:                  "",
+			MsgType:                xconst.MSG_TYPE_IMAGE,
+			AgentID:                config.GetWechatConf().AgentId,
+			Safe:                   0,
+			EnableIDTrans:          0,
+			EnableDuplicateCheck:   1,
+			DuplicateCheckInterval: 1800,
+		},
+		Image: &request.RequestImage{MediaID: tempImageResp.MediaID},
+	}
+	resp, err := WeComApp.Message.SendImage(ctx, message)
+	if err != nil {
+		xlog.Log.WithError(err).WithField("用户:", userName).WithField("微信发送图片消息响应", resp).Error("发送已上传图片素材失败")
 		return nil
 	}
 	return resp

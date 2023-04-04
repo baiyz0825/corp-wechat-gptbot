@@ -3,6 +3,8 @@ package xlog
 import (
 	"io"
 	"os"
+	"path"
+	"runtime"
 
 	"github.com/baiyz0825/corp-webot/config"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
@@ -50,13 +52,25 @@ func NewLogger() *logrus.Logger {
 		}
 	default:
 	}
+	Logger.SetReportCaller(true)
 	// 格式化
 	Logger.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp:   true,
+		ForceQuote:      true,
 		TimestampFormat: config.GetSystemConf().LogConf.LogFileDateFmt,
+		CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
+			fileName := path.Base(frame.File)
+			return frame.Function, fileName
+		},
 	})
 	if config.GetSystemConf().LogConf.LogFormatter == "json" {
 		Logger.SetFormatter(&logrus.JSONFormatter{
+			PrettyPrint:     true,
 			TimestampFormat: config.GetSystemConf().LogConf.LogFileDateFmt,
+			CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
+				fileName := path.Base(frame.File)
+				return frame.Function, fileName
+			},
 		})
 	}
 	return Logger

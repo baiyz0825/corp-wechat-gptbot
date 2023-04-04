@@ -6,11 +6,11 @@ import (
 	"github.com/baiyz0825/corp-webot/xconst"
 )
 
-type NotSupportCommand struct {
+type HelpCommand struct {
 }
 
-func NewNotSupportCommand() *NotSupportCommand {
-	return &NotSupportCommand{}
+func NewHelpCommandCommand() *HelpCommand {
+	return &HelpCommand{}
 }
 
 // Exec
@@ -18,7 +18,7 @@ func NewNotSupportCommand() *NotSupportCommand {
 // @receiver n
 // @param userData
 // @return bool
-func (n NotSupportCommand) Exec(userData to.MsgContent) bool {
+func (n HelpCommand) Exec(userData to.MsgContent) bool {
 	services.SendToWxByText(userData, xconst.GetDefaultNoticeMenu())
 	return true
 }

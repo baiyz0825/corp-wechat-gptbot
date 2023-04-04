@@ -14,7 +14,7 @@ import (
 )
 
 type Command struct {
-	cmd inter.WxTextCommand
+	cmd inter.CropWxTextCommand
 }
 
 func (n Command) Exec(userData to.MsgContent) bool {
@@ -26,12 +26,14 @@ func (n Command) Exec(userData to.MsgContent) bool {
 // @param cmd
 func GetCommand(contentStr string) *Command {
 	command := &Command{}
-	if strings.HasPrefix(contentStr, xconst.COMMAND_GPT) {
-		command.cmd = impl.NewGPTCommand()
-	} else if strings.HasPrefix(contentStr, xconst.COMMAN_GPT_DELETE_CONTEXT) {
+	if strings.HasPrefix(contentStr, xconst.COMMAN_GPT_DELETE_CONTEXT) {
 		command.cmd = impl.NewContextCommand()
+	} else if strings.HasPrefix(contentStr, xconst.COMMAND_HELP) {
+		command.cmd = impl.NewHelpCommandCommand()
+	} else if strings.HasPrefix(contentStr, xconst.COMMAN_GPT_IMAGE) {
+		command.cmd = impl.NewGPTImageCommand()
 	} else {
-		command.cmd = impl.NewNotSupportCommand()
+		command.cmd = impl.NewGPTCommand()
 	}
 	return command
 }
@@ -39,7 +41,7 @@ func GetCommand(contentStr string) *Command {
 // SendToWxByMarkdown 使用markdown发送
 func SendToWxByMarkdown(userData to.MsgContent, msg string) bool {
 	// TODO: 考虑是否分片长消息分割
-	resp := wecom.SendMarkdownToUSer(userData, msg)
+	resp := wecom.SendMarkdownToUSer(userData.ToUsername, msg)
 	if resp.ResponseWork.ErrCode != 0 {
 		logrus.WithField("resp:", resp).Error("企业微信助手发送失败")
 		return false
@@ -56,7 +58,7 @@ func SendToWxByText(userData to.MsgContent, msg string) bool {
 	for i := 0; i < len(lines); i++ {
 		// >2000 发送前一部分，清空重来
 		if len(content)+len(lines[i]) > 2000 {
-			resp := wecom.SendTextToUSer(userData, content)
+			resp := wecom.SendTextToUSer(userData.ToUsername, content)
 			if resp.ResponseWork.ErrCode != 0 {
 				logrus.WithField("resp:", resp).Error("企业微信助手发送分片失败")
 			}
@@ -69,7 +71,7 @@ func SendToWxByText(userData to.MsgContent, msg string) bool {
 	}
 	// 最后一个
 	if content != "" {
-		resp := wecom.SendTextToUSer(userData, content)
+		resp := wecom.SendTextToUSer(userData.ToUsername, content)
 		if resp.ResponseWork.ErrCode != 0 {
 			logrus.WithField("resp:", resp).Error("企业微信助手发送分片失败")
 		}

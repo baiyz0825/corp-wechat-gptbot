@@ -14,6 +14,6 @@ func TestSendReqAndGetResp(t *testing.T) {
 			Role:    "user",
 			Content: str,
 		}}
-	resp := SendReqAndGetResp(msg)
+	resp := SendReqAndGetTextResp(msg)
 	fmt.Println(resp)
 }
