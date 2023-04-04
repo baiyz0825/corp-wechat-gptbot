@@ -17,6 +17,7 @@ func loadGin() *gin.Engine {
 	r.Use(middleware.LoggerToFile())
 	// 注册路由
 	routers.LoadRouters(r)
+	dao.LoadDatabase()
 	return r
 }
 

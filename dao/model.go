@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"database/sql"
 	"encoding/json"
 	"time"
 
@@ -38,13 +37,14 @@ func (c *Context) SetContext(context model.MessageContext) bool {
 // @receiver c
 // @param db
 // @return error
-func InsertUserContext(name, contextMsg string, db *sql.DB) error {
+func InsertUserContext(name, contextMsg string) error {
 	query := `insert into context (name, context_msg,update_time) values (?,?,?)`
-	prepare, err := db.Prepare(query)
+	stmt, err := Db.Prepare(query)
 	if err != nil {
 		return errors.Wrap(err, "prepare数据库查询语句")
 	}
-	_, err = prepare.Exec(name, contextMsg, time.Now().UnixMilli())
+	defer stmt.Close()
+	_, err = stmt.Exec(name, contextMsg, time.Now().UnixMilli())
 	if err != nil {
 		return errors.Wrap(err, "prepare数据库语句执行失败")
 	}
@@ -54,17 +54,17 @@ func InsertUserContext(name, contextMsg string, db *sql.DB) error {
 // UpdateContext
 // @Description: 更新用户上下文
 // @receiver c
-// @param db
+// @param Db
 // @return error
-func UpdateContext(contextMsg, userName string, db *sql.DB) error {
+func UpdateContext(contextMsg, userName string) error {
 	query := `update context set context_msg=?,update_time=? where id in{
-				select id from context where name=? ORDER BY update_time limit 1
-				}`
-	prepare, err := db.Prepare(query)
+				select id from context where name=? ORDER BY update_time limit 1}`
+	stmt, err := Db.Prepare(query)
 	if err != nil {
 		return errors.Wrap(err, "prepare数据库查询语句")
 	}
-	_, err = prepare.Exec(contextMsg, time.Now().UnixMilli(), userName)
+	defer stmt.Close()
+	_, err = stmt.Exec(contextMsg, time.Now().UnixMilli(), userName)
 	if err != nil {
 		return errors.Wrap(err, "prepare数据库语句执行失败")
 	}
@@ -74,40 +74,44 @@ func UpdateContext(contextMsg, userName string, db *sql.DB) error {
 // GetLatestUserContext
 // @Description:  获取最新用户上下文对象中上下文
 // @receiver c
-// @param db
+// @param Db
 // @return *model.MessageContext
 // @return error
-func GetLatestUserContext(userName string, db *sql.DB) (*Context, error) {
+func GetLatestUserContext(userName string) (*Context, error) {
 	sql := `select * from context where name=? limit 1 Order By update_time DESC`
-	stmt, err := db.Prepare(sql)
+	stmt, err := Db.Prepare(sql)
 	if err != nil {
 		return nil, errors.Wrap(err, "prepare数据库查询语句")
 	}
-	data, err := stmt.Query(userName)
+	defer stmt.Close()
+	rows, err := stmt.Query(userName)
+	defer rows.Close()
 	if err != nil {
 		return nil, errors.Wrap(err, "prepare数据库语句执行失败")
 	}
-	if data.Next() {
-		temp := Context{}
-		err = data.Scan(temp.Id, temp.Name, temp.ContextMsg, temp.UpdateTime)
+	if rows.Next() {
+		temp := &Context{}
+		err = rows.Scan(&temp.Id, &temp.Name, &temp.ContextMsg, &temp.UpdateTime)
 		if err != nil {
 			return nil, errors.Wrap(err, "prepare数据库语句执行结果赋值失败")
 		}
+		return temp, nil
 	}
-	return nil, errors.New("不存在数据")
+	return nil, nil
 }
 
 // DeleteHistoryContext
 // @Description:  删除全部用户上下文
 // @receiver c
-// @param db
+// @param Db
 // @return error
-func DeleteHistoryContext(userName string, db *sql.DB) error {
+func DeleteHistoryContext(userName string) error {
 	sql := `delete from context where name=?`
-	stmt, err := db.Prepare(sql)
+	stmt, err := Db.Prepare(sql)
 	if err != nil {
 		return errors.Wrap(err, "prepare数据库查询语句")
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(userName)
 	if err != nil {
 		return errors.Wrap(err, "prepare数据库语句执行失败")
@@ -126,9 +130,9 @@ type User struct {
 // @Description: 插入用户
 // @receiver u
 // @return error
-func InsertUser(name, sysPrompt string, db *sql.DB) error {
-	sql := `insert user (name,sys_prompt,update_time) values(?,?,?)`
-	stmt, err := db.Prepare(sql)
+func InsertUser(name, sysPrompt string) error {
+	sql := `insert into user (name,sys_prompt,update_time) values(?,?,?)`
+	stmt, err := Db.Prepare(sql)
 	if err != nil {
 		return errors.Wrap(err, "prepare数据库查询语句")
 	}
@@ -143,37 +147,40 @@ func InsertUser(name, sysPrompt string, db *sql.DB) error {
 // @Description: 查询用户信息
 // @receiver u
 // @return error
-func GetUser(userName string, db *sql.DB) (*User, error) {
-	sql := `select (name,sys_prompt,update_time) from  user where name=? `
-	stmt, err := db.Prepare(sql)
+func GetUser(userName string) (*User, error) {
+	sql := "select name,sys_prompt,update_time from user where name=?"
+	stmt, err := Db.Prepare(sql)
 	if err != nil {
 		return nil, errors.Wrap(err, "prepare数据库查询语句")
 	}
+	defer stmt.Close()
 	row, err := stmt.Query(userName)
+	defer row.Close()
 	if err != nil {
 		return nil, errors.Wrap(err, "prepare数据库语句执行失败")
 	}
 	if row.Next() {
 		temp := &User{}
-		err = row.Scan(temp.Id, temp.SysPrompt, temp.UpdateTime)
+		err = row.Scan(&temp.Name, &temp.SysPrompt, &temp.UpdateTime)
 		if err != nil {
-			return nil, errors.Wrap(err, "反序列话用户"+userName+"上下文失败")
+			return nil, errors.Wrap(err, "读取用户db失败"+userName)
 		}
 		return temp, nil
 	}
-	return nil, errors.New("不存在数据")
+	return nil, nil
 }
 
 // UpdateUser
 // @Description: 更新用户信息
 // @receiver u
 // @return error
-func UpdateUser(sysPrompt, userName string, db *sql.DB) error {
-	sql := `update user set sys_prompt=?,update_time+? where name=?`
-	stmt, err := db.Prepare(sql)
+func UpdateUser(sysPrompt, userName string) error {
+	sql := `update user set sys_prompt=?,update_time=? where name=?`
+	stmt, err := Db.Prepare(sql)
 	if err != nil {
 		return errors.Wrap(err, "prepare数据库查询语句")
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(sysPrompt, time.Now().UnixMilli(), userName)
 	if err != nil {
 		return errors.Wrap(err, "prepare数据库语句执行失败")
@@ -187,14 +194,18 @@ func UpdateUser(sysPrompt, userName string, db *sql.DB) error {
 // @return bool
 func CheckUserAndCreate(userName string) bool {
 	// 查询用户是否存在
-	user, err := GetUser(userName, DB)
-	if err != nil || user == nil {
+	user, err := GetUser(userName)
+	if err != nil {
 		xlog.Log.WithField("用户名:", userName).Error(xconst.USER_DAO_SEARCH_ERR)
 		return false
 	}
+	// 存在不创建
+	if user != nil {
+		return true
+	}
 	// 创建用户
 	xlog.Log.WithField("用户名:", userName).Info(xconst.USER_DAO_FIRST_CREATE)
-	err = InsertUser(userName, xconst.AI_DEFAULT_PROMPT, DB)
+	err = InsertUser(userName, xconst.AI_DEFAULT_PROMPT)
 	if err != nil {
 		xlog.Log.WithField("用户名:", userName).Error(xconst.USER_DAO_INSERT_ERR)
 		return false

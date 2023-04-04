@@ -35,12 +35,6 @@ func LoadWeComAppConf() {
 			Scopes:   nil,
 		},
 		HttpDebug: true,
-		// 可选，不传默认走程序内存
-		// Cache: kernel.NewRedisClient(&kernel.RedisOptions{
-		// 	Addr:     "127.0.0.1:6379",
-		// 	Password: "",
-		// 	DB:       0,
-		// }),
 	})
 	if err != nil {
 		xlog.Log.WithError(err).Error("初始化企业微信助手失败！")
@@ -123,7 +117,7 @@ func SendTextToUSer(userName string, respMsg string) *response.ResponseMessageSe
 			AgentID:                config.GetWechatConf().AgentId,
 			Safe:                   0,
 			EnableIDTrans:          0,
-			EnableDuplicateCheck:   1,
+			EnableDuplicateCheck:   0,
 			DuplicateCheckInterval: 1800,
 		},
 		Text: &request.RequestText{
@@ -151,11 +145,13 @@ func SendImageToUser(data []byte, imageExt string, userName string) *response.Re
 		"name":  userName + "_" + xstring.GenerateRandomStr() + imageExt,
 		"value": data,
 	}
+	xlog.Log.WithField("用户:", userName).Debug("上传微信素材中....")
 	tempImageResp, err := WeComApp.Media.UploadTempImage(ctx, "", dataFrom)
 	if err != nil {
 		xlog.Log.WithError(err).WithField("用户:", userName).WithField("微信临时素材响应:", tempImageResp).Error("上传临时图片素材失败")
 		return nil
 	}
+	xlog.Log.WithField("用户:", userName).Debug("上传微信素材成功，正在发送消息...")
 	// 发送图片消息
 	message := &request.RequestMessageSendImage{
 		RequestMessageSend: request.RequestMessageSend{
@@ -166,7 +162,7 @@ func SendImageToUser(data []byte, imageExt string, userName string) *response.Re
 			AgentID:                config.GetWechatConf().AgentId,
 			Safe:                   0,
 			EnableIDTrans:          0,
-			EnableDuplicateCheck:   1,
+			EnableDuplicateCheck:   0,
 			DuplicateCheckInterval: 1800,
 		},
 		Image: &request.RequestImage{MediaID: tempImageResp.MediaID},
@@ -176,5 +172,6 @@ func SendImageToUser(data []byte, imageExt string, userName string) *response.Re
 		xlog.Log.WithError(err).WithField("用户:", userName).WithField("微信发送图片消息响应", resp).Error("发送已上传图片素材失败")
 		return nil
 	}
+	xlog.Log.WithField("用户:", userName).Debug("微信消息推送成功！")
 	return resp
 }

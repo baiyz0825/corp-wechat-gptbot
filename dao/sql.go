@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/baiyz0825/corp-webot/utils/xlog"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 const (
@@ -11,19 +12,21 @@ const (
 	DB_TYPE = "sqlite3"
 )
 
-var DB *sql.DB
+var Db *sql.DB
 
-func init() {
+func LoadDatabase() {
 	xlog.Log.Info("初始化Db.....")
 	// 打开数据库
-	DB, err := sql.Open(DB_TYPE, DB_NAME)
+	db, err := sql.Open(DB_TYPE, DB_NAME)
 	if err != nil {
 		xlog.Log.WithField("初始化DB:", "打开数据库失败").Fatal(err)
+		panic("数据库初始化失败")
 	}
 	// 创建表
-	if err := createTable(DB); err != nil {
+	if err := createTable(db); err != nil {
 		xlog.Log.WithField("初始化DB:", "创建表失败").Fatal(err)
 	}
+	Db = db
 }
 
 // CloseDb
@@ -34,7 +37,7 @@ func CloseDb() {
 		if err != nil {
 
 		}
-	}(DB)
+	}(Db)
 }
 
 // createTable
@@ -43,7 +46,7 @@ func CloseDb() {
 // @return error
 func createTable(db *sql.DB) error {
 	sql := `create table if not exists 
-    			"users" (
+    			"user" (
                     id INTEGER
                         primary key autoincrement,
                     name CHAR(50) not null ,

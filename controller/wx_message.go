@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/baiyz0825/corp-webot/dao"
-	"github.com/baiyz0825/corp-webot/services"
+	"github.com/baiyz0825/corp-webot/services/impl"
 	"github.com/baiyz0825/corp-webot/to"
 	"github.com/baiyz0825/corp-webot/utils/wecom"
 	"github.com/baiyz0825/corp-webot/utils/xlog"
@@ -46,7 +46,7 @@ func ChatWithGPT(c *gin.Context) {
 	go func() {
 		err = xml.Unmarshal(userDataDecrypt, &userData)
 		// 检测缓存
-		if services.CheckCacheUserEchoReq(userData) {
+		if impl.CheckCacheUserEchoReq(userData) {
 			return
 		}
 		if err != nil {
@@ -57,17 +57,17 @@ func ChatWithGPT(c *gin.Context) {
 			c.String(http.StatusBadRequest, "不支持非text类型处理")
 		}
 		// 检查用户是否存在，不存在创建
-		if !dao.CheckUserAndCreate(userData.ToUsername) {
-			xlog.Log.WithField("用户信息", userData.ToUsername).Errorf("创建用户失败")
+		if !dao.CheckUserAndCreate(userData.FromUsername) {
+			xlog.Log.WithField("用户信息", userData.FromUsername).Errorf("创建用户失败")
 			return
 		}
 		// 处理数据
-		ok := services.GetCommand(userData.Content).Exec(userData)
+		ok := impl.GetCommand(userData.Content).Exec(userData)
 		if !ok {
-			xlog.Log.WithField("data:", userData).Error("发送失败")
+			xlog.Log.WithField("data:", userData).Error("执行指令失败！")
 			return
 		}
-		xlog.Log.WithField("data:", userData).Error("发送成功")
+		xlog.Log.WithField("data:", userData).Debug("执行指令成功！")
 		return
 	}()
 }

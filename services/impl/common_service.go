@@ -1,14 +1,15 @@
-package services
+package impl
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
 	xcache "github.com/baiyz0825/corp-webot/cache"
-	"github.com/baiyz0825/corp-webot/services/impl"
 	"github.com/baiyz0825/corp-webot/services/inter"
 	"github.com/baiyz0825/corp-webot/to"
 	"github.com/baiyz0825/corp-webot/utils/wecom"
+	"github.com/baiyz0825/corp-webot/utils/xstring"
 	"github.com/baiyz0825/corp-webot/xconst"
 	"github.com/sirupsen/logrus"
 )
@@ -27,13 +28,15 @@ func (n Command) Exec(userData to.MsgContent) bool {
 func GetCommand(contentStr string) *Command {
 	command := &Command{}
 	if strings.HasPrefix(contentStr, xconst.COMMAN_GPT_DELETE_CONTEXT) {
-		command.cmd = impl.NewContextCommand()
+		command.cmd = NewContextCommand()
 	} else if strings.HasPrefix(contentStr, xconst.COMMAND_HELP) {
-		command.cmd = impl.NewHelpCommandCommand()
+		command.cmd = NewHelpCommandCommand()
 	} else if strings.HasPrefix(contentStr, xconst.COMMAN_GPT_IMAGE) {
-		command.cmd = impl.NewGPTImageCommand()
+		command.cmd = NewGPTImageCommand()
+	} else if strings.HasPrefix(contentStr, xconst.COMMAN_GPT_PROMPT_SET) {
+		command.cmd = NewGPTPromptCommand()
 	} else {
-		command.cmd = impl.NewGPTCommand()
+		command.cmd = NewGPTCommand()
 	}
 	return command
 }
@@ -41,7 +44,7 @@ func GetCommand(contentStr string) *Command {
 // SendToWxByMarkdown 使用markdown发送
 func SendToWxByMarkdown(userData to.MsgContent, msg string) bool {
 	// TODO: 考虑是否分片长消息分割
-	resp := wecom.SendMarkdownToUSer(userData.ToUsername, msg)
+	resp := wecom.SendMarkdownToUSer(userData.FromUsername, msg)
 	if resp.ResponseWork.ErrCode != 0 {
 		logrus.WithField("resp:", resp).Error("企业微信助手发送失败")
 		return false
@@ -58,7 +61,7 @@ func SendToWxByText(userData to.MsgContent, msg string) bool {
 	for i := 0; i < len(lines); i++ {
 		// >2000 发送前一部分，清空重来
 		if len(content)+len(lines[i]) > 2000 {
-			resp := wecom.SendTextToUSer(userData.ToUsername, content)
+			resp := wecom.SendTextToUSer(userData.FromUsername, content)
 			if resp.ResponseWork.ErrCode != 0 {
 				logrus.WithField("resp:", resp).Error("企业微信助手发送分片失败")
 			}
@@ -71,7 +74,7 @@ func SendToWxByText(userData to.MsgContent, msg string) bool {
 	}
 	// 最后一个
 	if content != "" {
-		resp := wecom.SendTextToUSer(userData.ToUsername, content)
+		resp := wecom.SendTextToUSer(userData.FromUsername, content)
 		if resp.ResponseWork.ErrCode != 0 {
 			logrus.WithField("resp:", resp).Error("企业微信助手发送分片失败")
 		}
@@ -81,7 +84,8 @@ func SendToWxByText(userData to.MsgContent, msg string) bool {
 
 // CheckCacheUserEchoReq 检查缓存中是否存在数据 用户多少秒允许发送一次请求
 func CheckCacheUserEchoReq(data to.MsgContent) bool {
-	cacheKey := data.ToUsername + ":" + data.Msgid
+	hashInt64 := xstring.HashDataConcurrently([]byte(data.Content))
+	cacheKey := data.FromUsername + ":" + strconv.FormatInt(hashInt64, 10)
 	_, find := xcache.GetCacheDb().Get(cacheKey)
 	if find {
 		return true

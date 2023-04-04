@@ -2,8 +2,11 @@ package xstring
 
 import (
 	"fmt"
+	"hash/fnv"
+	"io/ioutil"
 	"math/rand"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/common-nighthawk/go-figure"
@@ -36,4 +39,62 @@ func GenerateRandomStr() string {
 	}
 
 	return builder.String()
+}
+
+// chunkSize represents the size of each chunk
+const chunkSize = 1024 * 1024
+
+// HashFile returns the hash value of a file
+func HashFile(filePath string) int64 {
+	data, _ := ioutil.ReadFile(filePath)
+	return HashData(data)
+}
+
+// HashData returns the hash value of a byte slice
+func HashData(data []byte) int64 {
+	// Compute hash of the data
+	h := fnv.New64a()
+	h.Write(data)
+	hash := h.Sum64()
+
+	return int64(hash)
+}
+
+// HashFileConcurrently returns the hash value of a file using concurrent processing
+func HashFileConcurrently(filePath string) int64 {
+	data, _ := ioutil.ReadFile(filePath)
+	return HashDataConcurrently(data)
+}
+
+// HashDataConcurrently returns the hash value of a byte slice using concurrent processing
+func HashDataConcurrently(data []byte) int64 {
+	// Calculate the number of chunks
+	numChunks := len(data) / chunkSize
+	if len(data)%chunkSize != 0 {
+		numChunks++
+	}
+
+	// Create a hash function
+	h := fnv.New64a()
+
+	// Process each chunk concurrently
+	var wg sync.WaitGroup
+	wg.Add(numChunks)
+	for i := 0; i < numChunks; i++ {
+		go func(i int) {
+			defer wg.Done()
+			start := i * chunkSize
+			end := start + chunkSize
+			if end > len(data) {
+				end = len(data)
+			}
+			chunk := data[start:end]
+			h.Write(chunk)
+		}(i)
+	}
+	wg.Wait()
+
+	// Return the hash value
+	hash := h.Sum64()
+	return int64(hash)
 }

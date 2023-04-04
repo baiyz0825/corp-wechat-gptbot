@@ -52,7 +52,7 @@ func NewSystemMsg(msg string) openai.ChatCompletionMessage {
 func NewUserChatContext(keyFactor string) MessageContext {
 	return MessageContext{
 		Key:     xcache.GetUserCacheKey(keyFactor),
-		Context: make([]openai.ChatCompletionMessage, config.GetGptConf().ContextNumber/2, config.GetGptConf().ContextNumber),
+		Context: make([]openai.ChatCompletionMessage, 0, config.GetGptConf().ContextNumber),
 	}
 }
 

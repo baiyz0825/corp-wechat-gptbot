@@ -1,6 +1,6 @@
 systemConf:
   proxy: http://192.168.0.44:7890 # http代理地址
-  port: 50008 # 允许端口
+  port: 8989 # 允许端口
   logPath: ./logs/log #日志文件位置
   callBackUrl: http://127.0.0.1 # 回调地址
   msgMode: text # markdown 或者 text

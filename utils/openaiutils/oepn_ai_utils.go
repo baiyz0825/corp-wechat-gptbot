@@ -55,6 +55,6 @@ func SendReqAndGetImageResp(promptMsg string) string {
 		xlog.Log.Errorf("CreateImageCompletion returned error: %v", err)
 		return ""
 	}
-	xlog.Log.WithField("data:", image).Debug("获取的数据是：")
+	xlog.Log.WithField("data:", image.Data).Debug("获取的数据是：")
 	return image.Data[0].URL
 }

@@ -22,16 +22,16 @@ func init() {
 	proxy := config.GetSystemConf().Proxy
 	if len(proxy) > 0 {
 		parseUrl, err := url.Parse(proxy)
-		if CheckServer(parseUrl.Host) && err != nil {
-			xlog.Log.Error("代理Url获取成功，本次将使用代理")
-			xlog.Log.Infof("设置代理中...")
+		if CheckServer(parseUrl.Host) && err == nil {
+			xlog.Log.Info("代理Url获取成功，本次将使用代理")
 			HttpClient.Transport = &http.Transport{
 				Proxy: http.ProxyURL(parseUrl),
 			}
 			return
 		}
+	} else {
+		xlog.Log.Infof("客户端Http代理未设置设置，本次将不使用代理")
 	}
-	xlog.Log.Infof("客户端Http代理未设置设置，本次将不使用代理")
 	return
 }
 
@@ -42,6 +42,6 @@ func CheckServer(strUrl string) bool {
 		fmt.Println("无法访问代理, error: ", err)
 		return false
 	}
-	xlog.Log.Infof("代理设置成功！")
+	xlog.Log.Infof("代理测试成功！")
 	return true
 }
