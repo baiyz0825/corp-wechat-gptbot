@@ -36,5 +36,6 @@ func GetDefaultNoticeMenu() string {
 @clear：清除聊天上下文 -> 例子：@clear
 @image: 根据你的描述生成图片 -> 例子：@image 生成一只黑色的猫
 @prompt-set：设置默认角色描述 -> 例子：@prompt-set 你是一个资深的程序员
-@export：导出你的本次对话内容 -> 例子：@export`
+@export：导出你的本次对话内容 -> 例子：@export
+使用建议：每次开启新对话前，可以先执行@clear清除上下文内容，使用@prompt-set设置角色（也可不设置）开启一次对话。`
 }

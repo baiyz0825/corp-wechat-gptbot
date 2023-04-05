@@ -1,6 +1,7 @@
 package xhttp
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net"
 	"net/http"
@@ -18,6 +19,9 @@ func init() {
 	HttpClient = &http.Client{
 		Timeout: time.Second * 60,
 	}
+	HttpClient.Transport = &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	// 检查是否配置代理
 	proxy := config.GetSystemConf().Proxy
 	if len(proxy) > 0 {
@@ -25,7 +29,7 @@ func init() {
 		if CheckServer(parseUrl.Host) && err == nil {
 			xlog.Log.Info("代理Url获取成功，本次将使用代理")
 			HttpClient.Transport = &http.Transport{
-				Proxy: http.ProxyURL(parseUrl),
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			}
 			return
 		}

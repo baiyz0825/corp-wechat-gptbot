@@ -26,6 +26,7 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
 RUN apt-get update
 RUN apt-get install -y wkhtmltopdf
+RUN apt-get install -y ca-certificates
 # 设置cgo依赖
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 #RUN apk --no-cache add tzdata ca-certificates libc6-compat libgcc libstdc++
