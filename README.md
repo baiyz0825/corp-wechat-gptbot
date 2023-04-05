@@ -59,6 +59,18 @@ docker run -d \
   --restart=always \
   ghcr.io/baiyz0825/corp-webot:main
 ```
+Example:
+```shell
+docker run -d \
+--name=gpt-webot \
+--net=host \
+-p 50008:50008 \
+-v /home/byz/gpt/config:/apps/config \
+-v /home/byz/gpt/db:/apps/db \
+-v /home/byz/gpt/logs:/apps/logs \
+--restart=always \
+ghcr.io/baiyz0825/corp-webot:main
+```
 3. 数据表创建
 ```sqlite
 create table if not exists "users" (
