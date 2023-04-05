@@ -145,7 +145,7 @@ func SendImageToUser(data []byte, imageExt string, userName string) *response.Re
 		"name":  userName + "_" + xstring.GenerateRandomStr() + imageExt,
 		"value": data,
 	}
-	xlog.Log.WithField("用户:", userName).Debug("上传微信素材中....")
+	xlog.Log.WithField("用户:", userName).Debug("上传微信图片素材中....")
 	tempImageResp, err := WeComApp.Media.UploadTempImage(ctx, "", dataFrom)
 	if err != nil {
 		xlog.Log.WithError(err).WithField("用户:", userName).WithField("微信临时素材响应:", tempImageResp).Error("上传临时图片素材失败")
@@ -172,6 +172,51 @@ func SendImageToUser(data []byte, imageExt string, userName string) *response.Re
 		xlog.Log.WithError(err).WithField("用户:", userName).WithField("微信发送图片消息响应", resp).Error("发送已上传图片素材失败")
 		return nil
 	}
-	xlog.Log.WithField("用户:", userName).Debug("微信消息推送成功！")
+	xlog.Log.WithField("用户:", userName).Debug("微信图片消息推送成功！")
+	return resp
+}
+
+// SendFileToUser
+//  @Description: 发送文件给用户
+//  @param data
+//  @param fileExt
+//  @param userName
+//  @return *response.ResponseMessageSend
+//
+func SendFileToUser(data []byte, fileExt, userName string) *response.ResponseMessageSend {
+	ctx := context.Background()
+	// 上传临时文件获取mediaId
+	dataFrom := &power.HashMap{
+		"name":  userName + "_" + xstring.GenerateRandomStr() + "_contextHistory" + fileExt,
+		"value": data,
+	}
+	xlog.Log.WithField("用户:", userName).Debug("上传微信临时文件中....")
+	tempImageResp, err := WeComApp.Media.UploadTempFile(ctx, "", dataFrom)
+	if err != nil {
+		xlog.Log.WithError(err).WithField("用户:", userName).WithField("微信临时素材响应:", tempImageResp).Error("上传临时图片素材失败")
+		return nil
+	}
+	// 发送文件消息
+	messages := &request.RequestMessageSendFile{
+		RequestMessageSend: request.RequestMessageSend{
+			ToUser:                 userName,
+			ToParty:                "",
+			ToTag:                  "",
+			MsgType:                xconst.MSG_TYPE_FILE,
+			AgentID:                config.GetWechatConf().AgentId,
+			Safe:                   0,
+			EnableDuplicateCheck:   0,
+			DuplicateCheckInterval: 1800,
+		},
+		File: &request.RequestFile{
+			MediaID: tempImageResp.MediaID,
+		},
+	}
+	resp, err := WeComApp.Message.SendFile(ctx, messages)
+	if err != nil {
+		xlog.Log.WithError(err).WithField("用户:", userName).WithField("微信发送文件消息响应", resp).Error("发送已上传文件失败")
+		return nil
+	}
+	xlog.Log.WithField("用户:", userName).Debug("微信文件消息推送成功！")
 	return resp
 }

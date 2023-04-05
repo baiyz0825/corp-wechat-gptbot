@@ -2,13 +2,14 @@ package dao
 
 import (
 	"database/sql"
+	"os"
 
 	"github.com/baiyz0825/corp-webot/utils/xlog"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 const (
-	DB_NAME = "./data.db"
+	DB_NAME = "/db/data.db"
 	DB_TYPE = "sqlite3"
 )
 
@@ -16,11 +17,16 @@ var Db *sql.DB
 
 func LoadDatabase() {
 	xlog.Log.Info("初始化Db.....")
+	WorkPath, _ := os.Getwd()
 	// 打开数据库
-	db, err := sql.Open(DB_TYPE, DB_NAME)
+	db, err := sql.Open(DB_TYPE, WorkPath+DB_NAME)
 	if err != nil {
 		xlog.Log.WithField("初始化DB:", "打开数据库失败").Fatal(err)
 		panic("数据库初始化失败")
+	}
+	// 测试数据库是否连通
+	if err = db.Ping(); err != nil {
+		xlog.Log.Fatal(err)
 	}
 	// 创建表
 	if err := createTable(db); err != nil {

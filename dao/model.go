@@ -78,7 +78,7 @@ func UpdateContext(contextMsg, userName string) error {
 // @return *model.MessageContext
 // @return error
 func GetLatestUserContext(userName string) (*Context, error) {
-	sql := `select * from context where name=? limit 1 Order By update_time DESC`
+	sql := `select * from context where name=? Order By update_time DESC limit 1 `
 	stmt, err := Db.Prepare(sql)
 	if err != nil {
 		return nil, errors.Wrap(err, "prepare数据库查询语句")

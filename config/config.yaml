@@ -1,16 +1,15 @@
 systemConf:
   proxy: http://192.168.0.44:7890 # http代理地址
-  port: 8989 # 允许端口
-  logPath: ./logs/log #日志文件位置
+  port: 50008 # 允许端口
   callBackUrl: http://127.0.0.1 # 回调地址
   msgMode: text # markdown 或者 text
   logConf:
     logLevel: "debug"
-    logOutPutMode: console #console file both
-    logOutPutPath: "./log/crop-bot-run.log"
+    logOutPutMode: both #console file both
+    logOutPutPath: "./logs/crop-bot-run.log"
     logFileDateFmt: "2006-01-02 15:04:05"
-    logFileMaxSizeM: 14
     logFileRotationCount: 10
+    logRotationTime: 24
     logFormatter: text # text json
 gptConfig:
   apikey: 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 # openapi key

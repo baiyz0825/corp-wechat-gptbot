@@ -1,14 +1,17 @@
 package impl
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 	"time"
 
 	xcache "github.com/baiyz0825/corp-webot/cache"
+	"github.com/baiyz0825/corp-webot/model"
 	"github.com/baiyz0825/corp-webot/services/inter"
 	"github.com/baiyz0825/corp-webot/to"
 	"github.com/baiyz0825/corp-webot/utils/wecom"
+	"github.com/baiyz0825/corp-webot/utils/xlog"
 	"github.com/baiyz0825/corp-webot/utils/xstring"
 	"github.com/baiyz0825/corp-webot/xconst"
 	"github.com/sirupsen/logrus"
@@ -35,6 +38,8 @@ func GetCommand(contentStr string) *Command {
 		command.cmd = NewGPTImageCommand()
 	} else if strings.HasPrefix(contentStr, xconst.COMMAN_GPT_PROMPT_SET) {
 		command.cmd = NewGPTPromptCommand()
+	} else if strings.HasPrefix(contentStr, xconst.COMMAN_GPT_EXPORT) {
+		command.cmd = NewExportHistoryCommand()
 	} else {
 		command.cmd = NewGPTCommand()
 	}
@@ -92,4 +97,25 @@ func CheckCacheUserEchoReq(data to.MsgContent) bool {
 	}
 	xcache.SetDataToCache(cacheKey, "", time.Second*4)
 	return false
+}
+
+func MarshalMsgContextToJSon(userData to.MsgContent, msgContext model.MessageContext) ([]byte, error) {
+	msgContextJson, err := json.Marshal(msgContext)
+	if err != nil {
+		xlog.Log.WithError(err).WithField("序列化数据是", msgContextJson).
+			WithField("用户是:", userData.FromUsername).
+			Error("系统序列化错误")
+	}
+	return msgContextJson, err
+}
+
+func UnMarshalJSonToMsgContext(userName, data string) (*model.MessageContext, error) {
+	msgContext := &model.MessageContext{}
+	err := json.Unmarshal([]byte(data), msgContext)
+	if err != nil {
+		xlog.Log.WithError(err).WithField("反序列化数据是", data).
+			WithField("用户是:", userName).
+			Error("系统凡序列化错误")
+	}
+	return msgContext, err
 }

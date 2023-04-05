@@ -2,6 +2,7 @@
 package config
 
 import (
+	"os"
 	"time"
 
 	"github.com/spf13/viper"
@@ -30,13 +31,13 @@ type SystemConf struct {
 }
 
 type LoggerConf struct {
-	LogLevel             string `json:"logLevel,omitempty" yaml:"logLevel"`
-	LogOutPutMode        string `json:"logOutPutMode" yaml:"logOutPutMode"`
-	LogOutPutPath        string `json:"logOutPutPath,omitempty" yaml:"logOutPutPath"`
-	LogFileDateFmt       string `json:"logFileDateFmt,omitempty" yaml:"logFileDateFmt"`
-	LogFileMaxSizeM      int64  `json:"logFileMaxSizeM,omitempty" yaml:"logFileMaxSizeM"`
-	LogFileRotationCount uint   `json:"logFileRotationCount,omitempty" yaml:"logFileRotationCount"`
-	LogFormatter         string `json:"logFormatter,omitempty" yaml:"logFormatter"`
+	LogLevel             string        `json:"logLevel,omitempty" yaml:"logLevel"`
+	LogOutPutMode        string        `json:"logOutPutMode" yaml:"logOutPutMode"`
+	LogOutPutPath        string        `json:"logOutPutPath,omitempty" yaml:"logOutPutPath"`
+	LogFileDateFmt       string        `json:"logFileDateFmt,omitempty" yaml:"logFileDateFmt"`
+	LogRotationTime      time.Duration `json:"logRotationTime" yaml:"logRotationTime"`
+	LogFileRotationCount uint          `json:"logFileRotationCount,omitempty" yaml:"logFileRotationCount"`
+	LogFormatter         string        `json:"logFormatter,omitempty" yaml:"logFormatter"`
 }
 
 // GptConfig chatGpt api key
@@ -69,7 +70,8 @@ type WeChatConfig struct {
 func init() {
 	v := viper.New()
 	v.SetConfigType("yaml")
-	v.AddConfigPath("./config/")
+	WorkPath, _ := os.Getwd()
+	v.AddConfigPath(WorkPath + "/config/")
 	v.SetConfigName("config")
 	// viper.SetConfigName("config")
 	// viper.AddConfigPath("./config")

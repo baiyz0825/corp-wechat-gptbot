@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"time"
 
 	"github.com/baiyz0825/corp-webot/config"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
@@ -34,8 +35,8 @@ func NewLogger() *logrus.Logger {
 		writer, _ := rotatelogs.New(
 			path,
 			rotatelogs.WithLinkName(config.GetSystemConf().LogConf.LogOutPutPath),
-			rotatelogs.WithRotationSize(config.GetSystemConf().LogConf.LogFileMaxSizeM),
 			rotatelogs.WithRotationCount(config.GetSystemConf().LogConf.LogFileRotationCount),
+			rotatelogs.WithRotationTime(time.Hour*config.GetSystemConf().LogConf.LogRotationTime),
 		)
 		Logger.SetOutput(writer)
 	case "both":
@@ -44,8 +45,8 @@ func NewLogger() *logrus.Logger {
 			writer, _ := rotatelogs.New(
 				path,
 				rotatelogs.WithLinkName(config.GetSystemConf().LogConf.LogOutPutPath),
-				rotatelogs.WithRotationSize(config.GetSystemConf().LogConf.LogFileMaxSizeM),
 				rotatelogs.WithRotationCount(config.GetSystemConf().LogConf.LogFileRotationCount),
+				rotatelogs.WithRotationTime(time.Hour*config.GetSystemConf().LogConf.LogRotationTime),
 			)
 			multiWriter := io.MultiWriter(os.Stdout, writer)
 			Logger.SetOutput(multiWriter)

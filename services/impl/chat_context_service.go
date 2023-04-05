@@ -1,8 +1,6 @@
 package impl
 
 import (
-	"encoding/json"
-
 	xcache "github.com/baiyz0825/corp-webot/cache"
 	"github.com/baiyz0825/corp-webot/dao"
 	"github.com/baiyz0825/corp-webot/model"
@@ -39,13 +37,8 @@ func (c ContextCommand) Exec(userData to.MsgContent) bool {
 		}
 		msgContext = context
 	}
-	// 存储db context
-	msgContextJson, err := json.Marshal(msgContext)
-	if err != nil {
-		xlog.Log.WithError(err).WithField("反序列化数据是", msgContextJson).
-			WithField("用户是:", userData.FromUsername).
-			Error("系统凡序列化错误")
-	}
+	// 存储之前的context到db
+	msgContextJson, err := MarshalMsgContextToJSon(userData, msgContext)
 	err = dao.InsertUserContext(userData.FromUsername, string(msgContextJson))
 	if err != nil {
 		xlog.Log.WithError(err).WithField("插入数据是:", string(msgContextJson)).
@@ -63,3 +56,4 @@ func (c ContextCommand) Exec(userData to.MsgContent) bool {
 	SendToWxByText(userData, xconst.AI_CLEAR_CONTEXT_SUCCESS)
 	return true
 }
+

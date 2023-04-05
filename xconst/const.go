@@ -19,6 +19,7 @@ const (
 	COMMAN_GPT_DELETE_CONTEXT = "@clear"
 	COMMAN_GPT_IMAGE          = "@image"
 	COMMAN_GPT_PROMPT_SET     = "@prompt-set"
+	COMMAN_GPT_EXPORT         = "@export"
 )
 
 const (
@@ -34,5 +35,6 @@ func GetDefaultNoticeMenu() string {
 @help：帮助菜单 -> 例子：@help
 @clear：清除聊天上下文 -> 例子：@clear
 @image: 根据你的描述生成图片 -> 例子：@image 生成一只黑色的猫
-@prompt-set：设置默认角色描述 -> 例子：@@prompt-set 你是一个资深的程序员`
+@prompt-set：设置默认角色描述 -> 例子：@prompt-set 你是一个资深的程序员
+@export：导出你的本次对话内容 -> 例子：@export`
 }

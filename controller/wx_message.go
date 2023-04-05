@@ -22,8 +22,8 @@ func VerifyCallBack(c *gin.Context) {
 	_, _ = c.Writer.Write(msg)
 }
 
-// ChatWithGPT 实际处理用户消息
-func ChatWithGPT(c *gin.Context) {
+// WxChatCommand 实际处理用户消息
+func WxChatCommand(c *gin.Context) {
 	var dataStuc to.CallBackData
 	if err := c.ShouldBindQuery(&dataStuc); err != nil {
 		xlog.Log.Errorf("绑定回调Query错误：%v", err)

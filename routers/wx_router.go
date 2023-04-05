@@ -11,7 +11,7 @@ func RegistryWXRouter(r *gin.Engine) {
 	gptApi := r.Group("/gpt")
 	{
 		gptApi.GET("", controller.VerifyCallBack)
-		gptApi.POST("", controller.ChatWithGPT)
+		gptApi.POST("", controller.WxChatCommand)
 	}
 }
 

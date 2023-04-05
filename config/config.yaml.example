@@ -2,7 +2,6 @@ systemConf:
   proxy: xxxx# http代理地址
   port: 50008 # 允许端口
   log: info # panic, fatal, error, warn, info, debug, trace
-  logPath: ./logs/log #日志文件位置
   callBackUrl: http://127.0.0.1 # 回调地址
   msgMode: markdown # markdown 或者 text
   logConf:
@@ -10,7 +9,6 @@ systemConf:
     logOutPutMode: console #console file both
     logOutPutPath: "./log/crop-bot-run.log"
     logFileDateFmt: "2006-01-02 15:04:05"
-    logFileMaxSizeM: 14
     logFileRotationCount: 10
     logFormatter: text # text json
 gptConfig:

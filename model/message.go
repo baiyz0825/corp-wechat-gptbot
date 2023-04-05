@@ -6,6 +6,12 @@ import (
 	"github.com/sashabaranov/go-openai"
 )
 
+const (
+	USER   = "user"
+	AI     = "assistant"
+	SYSTEM = "system"
+)
+
 // MessageContext 用户上下文对象
 type MessageContext struct {
 	Key     string
@@ -18,7 +24,7 @@ type MessageContext struct {
 // @return *MessageContext
 func NewUserMsg(msg string) openai.ChatCompletionMessage {
 	return openai.ChatCompletionMessage{
-		Role:    "user",
+		Role:    USER,
 		Content: msg,
 	}
 }
@@ -29,7 +35,7 @@ func NewUserMsg(msg string) openai.ChatCompletionMessage {
 // @return *openai.ChatCompletionMessage
 func NewAssistantMsg(msg string) openai.ChatCompletionMessage {
 	return openai.ChatCompletionMessage{
-		Role:    "assistant",
+		Role:    AI,
 		Content: msg,
 	}
 }
@@ -40,7 +46,7 @@ func NewAssistantMsg(msg string) openai.ChatCompletionMessage {
 // @return *openai.ChatCompletionMessage
 func NewSystemMsg(msg string) openai.ChatCompletionMessage {
 	return openai.ChatCompletionMessage{
-		Role:    "assistant",
+		Role:    USER,
 		Content: msg,
 	}
 }

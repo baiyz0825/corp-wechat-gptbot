@@ -4,12 +4,16 @@ go 1.19
 
 require (
 	github.com/ArtisanCloud/PowerWeChat/v3 v3.0.8
+	github.com/alecthomas/chroma v0.10.0
 	github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be
 	github.com/gin-gonic/gin v1.8.2
+	github.com/gomarkdown/markdown v0.0.0-20230322041520-c84983bdbf2a
+	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
+	github.com/russross/blackfriday/v2 v2.1.0
 	github.com/sashabaranov/go-openai v1.5.4
 	github.com/sbzhu/weworkapi_golang v0.0.0-20210525081115-1799804a7c8d
 	github.com/sirupsen/logrus v1.9.0
@@ -17,11 +21,12 @@ require (
 )
 
 require (
-	crawshaw.io/sqlite v0.3.2 // indirect
 	github.com/ArtisanCloud/PowerLibs/v3 v3.0.2 // indirect
 	github.com/ArtisanCloud/PowerSocialite/v3 v3.0.4 // indirect
+	github.com/SebastiaanKlippert/go-wkhtmltopdf v1.9.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect

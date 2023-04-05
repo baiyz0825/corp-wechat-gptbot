@@ -52,8 +52,10 @@ weConfig:
 docker run -d \
   --name=gpt-webot \
   --net=host \
-  -p 50008:50008 \
+  -p 8989:50008 \
   -v YouPath:/apps/config \
+  -v YouPath:/apps/db \
+  -v YouPath:/apps/logs
   --restart=always \
   ghcr.io/baiyz0825/corp-webot:main
 ```
@@ -76,3 +78,23 @@ create table if not exists "context"
 );
 
 ```
+
+# 使用  wkhtmltopdf 转化pdf
+dockerfile中已经打包
+需要安装字体 `sudo cp ./assert/simsun.ttc /usr/share/fonts`
+
+# 命令使用方法
+1. @help：帮助菜单 -> 例子：@help
+获取系统指令菜单
+2. @clear：清除聊天上下文 -> 例子：@clear   
+清除当前会话的角色设置，以及当前聊天上下文信息
+3. @image: 根据你的描述生成图片 -> 例子：@image 生成一只黑色的猫
+4. @prompt-set：设置默认角色描述 -> 例子：@prompt-set 你是一个资深的程序员
+设置系统提示词，充当角色
+5. @export：导出你的本次对话内容 -> 例子：@export
+导出对话内容为pdf
+
+**注意：每次只会导出最新的一条对话记录，暂不支持删除全部服务端历史记录**
+
+# 数据存储
+数据db文件存储在容器中/apps/db 中
