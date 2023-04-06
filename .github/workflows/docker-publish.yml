@@ -40,7 +40,14 @@ jobs:
         uses: sigstore/cosign-installer@main
         with:
           cosign-release: 'v1.13.1'
-
+     # 缓存 Docker 镜像以加速构建
+      - name: 缓存层
+        uses: actions/cache@v2.1.8
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
 
         # Add support for more platforms with QEMU (optional)
@@ -49,6 +56,8 @@ jobs:
         uses: docker/setup-qemu-action@v2
       - name: Set up buildx
         uses: docker/setup-buildx-action@v2.5.0
+      - name: 支持平台
+        run: echo ${{ steps.buildx.outputs.platforms }}        
       - name: 查看构建器
         run: |
           echo "Name:      ${{ steps.buildx.outputs.name }}"
@@ -82,13 +91,16 @@ jobs:
         with:
           context: .
           builder: ${{ steps.buildx.outputs.name }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+      - name: 检查镜像
+        run: |
+          docker buildx imagetools inspect \
+          ${{ env.REGISTRY }}/${{ vars.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
