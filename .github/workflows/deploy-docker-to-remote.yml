@@ -39,6 +39,8 @@ jobs:
           key: ${{ secrets.VPS_SSH_SECRET }}
           port: ${{ secrets.VPS_SSH_PORT}}
           script: |
+            docker stop gpt-webot 
+            docker rm gpt-webot
             docker login ghcr.io -u ${{ secrets.DOCKER_DEPLOY_USERNAME }} -p ${{ secrets.DOCKER_DEPLOY_TOKEN }} 
             docker run -d --name=gpt-webot --net=host -p 50008:50008 -v /home/byz/gpt/config:/apps/config -v /home/byz/gpt/db:/apps/db -v /home/byz/gpt/logs:/apps/logs --restart=always ghcr.io/baiyz0825/corp-webot:main
             docker ps -al | grep gpt-webot
