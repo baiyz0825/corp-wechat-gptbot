@@ -90,3 +90,15 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
+      - name: 部署Docker Compose到服务器
+        uses: TapTap21/docker-remote-deployment-action@v1.1
+        with:
+          remote_docker_host: ${{secrets.DEPLOY_MACHINE}}
+          ssh_port: 2222
+          ssh_private_key: ${{ secrets.VPS_SSH_SECRET }}
+          ssh_public_key: ${{ secrets.VPS_SSH_PUB }}
+          stack_file_name: docker-compose.yaml
+          docker_login_password: ${{ secrets.DOCKER_DEPLOY_TOKEN }}
+          docker_login_user: ${{ secrets.DOCKER_DEPLOY_USERNAME }}
+          docker_login_registry : ${{ steps.login-ecr.outputs.registry }}
+          args: -p gpt-crop-bot up -d        
