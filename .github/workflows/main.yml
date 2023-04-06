@@ -1,0 +1,44 @@
+name: 构建微信GPT_BOT
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+on:
+  # 手动触发事件
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'
+
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deployDockerToRemote:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      # This is used to complete the identity challenge
+      # with sigstore/fulcio when running outside of PRs.
+      id-token: write
+    steps:
+      - name: 部署Docker Compose到服务器 ssh cmd
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_SSH_USERNAME }}
+          key: ${{ secrets.VPS_SSH_SECRET }}
+          port: ${{ secrets.VPS_SSH_PORT}}
+          script: |
+            docker login ghcr.io -u ${{ secrets.DOCKER_DEPLOY_USERNAME }} -p ${{ secrets.DOCKER_DEPLOY_TOKEN }} 
+            docker run -d --name=gpt-webot --net=host -p 50008:50008 -v /home/byz/gpt/config:/apps/config -v /home/byz/gpt/db:/apps/db -v /home/byz/gpt/logs:/apps/logs --restart=always ghcr.io/baiyz0825/corp-webot:main
+            docker ps -al | grep gpt-webot
