@@ -14,7 +14,8 @@ COPY . /apps
 RUN cd /apps && go build  -o bot
 
 # 打包
-FROM ubuntu:latest AS env
+FROM ubuntu:latest
+ENV DEBIAN_FRONTEND noninteractive
 WORKDIR /apps
 COPY --from=buildState /apps/bot /apps/
 COPY --from=buildState /apps/config/config.yaml.example /apps/config/
@@ -27,7 +28,7 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 #RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
 RUN apt-get update
 RUN apt-get install -y wkhtmltopdf
-RUN apt-get install -y ca-certificates
+RUN apt-get install -y  ca-certificates
 # 设置cgo依赖
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 #RUN apk --no-cache add tzdata ca-certificates libc6-compat libgcc libstdc++
