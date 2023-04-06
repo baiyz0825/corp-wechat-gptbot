@@ -62,7 +62,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4.3.0
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ vars.IMAGE_NAME }}
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
@@ -71,6 +71,7 @@ jobs:
         uses: docker/build-push-action@v4.0.0
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -94,7 +95,7 @@ jobs:
         uses: TapTap21/docker-remote-deployment-action@v1.1
         with:
           remote_docker_host: ${{secrets.DEPLOY_MACHINE}}
-          ssh_port: 2222
+          ssh_port: ${{ secrets.VPS_SSH_PORT}}
           ssh_private_key: ${{ secrets.VPS_SSH_SECRET }}
           ssh_public_key: ${{ secrets.VPS_SSH_PUB }}
           stack_file_name: docker-compose.yaml
