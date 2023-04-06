@@ -23,7 +23,8 @@ COPY --from=buildState /apps/assert /apps/assert/
 #COPY --from=buildState /go/bin/dlv /
 # 设置时区为上海
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
+# 国内镜像依赖编译
+#RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
 RUN apt-get update
 RUN apt-get install -y wkhtmltopdf
 RUN apt-get install -y ca-certificates
