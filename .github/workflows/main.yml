@@ -1,4 +1,4 @@
-name: 构建微信GPT_BOT
+name: 部署GPT_BOT到远程服务器
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
