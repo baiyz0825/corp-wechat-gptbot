@@ -6,9 +6,6 @@ ENV GO111MODULE=on \
     GOOS=linux \
     GOARCH=amd64 \
 	GOPROXY="https://goproxy.cn,direct"
-RUN dpkg --add-architecture amd64 \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends gcc-x86-64-linux-gnu libc6-dev-amd64-cross
 WORKDIR /apps
 COPY . /apps
 #RUN go install github.com/go-delve/delve/cmd/dlv@latest
