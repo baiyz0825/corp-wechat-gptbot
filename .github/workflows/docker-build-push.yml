@@ -1,4 +1,4 @@
-name: 构建微信GPT_BOT
+name: 构建 && 推送 && 部署
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
