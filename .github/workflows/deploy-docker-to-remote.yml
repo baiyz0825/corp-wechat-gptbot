@@ -7,22 +7,58 @@ name: 部署GPT_BOT到远程服务器
 on:
   # 手动触发事件
   workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-      tags:
-        description: 'Test scenario tags'
 
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
+  LOG_LEVEL: debug
 
 jobs:
+  # 检查并且安装Dokcer环境
+  installAndCheckDockerEnv:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 检查Docker是否安装
+      id: check-docker
+      uses: appleboy/ssh-action@v0.1.9
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_SSH_USERNAME }}
+        password: ${{ secrets.VPS_SSH_PASSWD }}
+        port: ${{ secrets.VPS_SSH_PORT}}
+        script: |
+          if command -v docker > /dev/null 2>&1; then
+            echo "Docker is already installed on the remote server"
+            echo "::set-output name=installed::true"
+            echo "envCheckRes=true" >> $GITHUB_ENV
+          else
+            echo "Docker is not installed on the remote server"
+            echo "::set-output name=installed::false"
+          fi        
+    - name: 安装Docker
+      id: install-docker
+      if: steps.check-docker.outputs.installed == 'false'
+      uses: appleboy/ssh-action@v0.1.9
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_SSH_USERNAME }}
+        password: ${{ secrets.VPS_SSH_PASSWD }}
+        port: ${{ secrets.VPS_SSH_PORT}}
+        script: |
+          sudo apt update
+          sudo apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          sudo apt update
+          sudo apt install -y docker-ce docker-ce-cli containerd.io
+          sudo systemctl start docker
+          sudo usermod -aG docker $USER
+          echo "envCheckRes=true" >> $GITHUB_ENV           
   deployDockerToRemote:
+    needs: [installAndCheckDockerEnv]
+    if: ${{ envCheckRes == 'true' }} 
     runs-on: ubuntu-latest
     permissions:
       contents: read
