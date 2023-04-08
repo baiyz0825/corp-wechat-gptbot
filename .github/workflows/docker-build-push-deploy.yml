@@ -11,6 +11,14 @@ on:
     tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
+  
+# 仅允许管理员手动执行
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  checks: write
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -18,9 +26,8 @@ env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
 
-
 jobs:
-  buildAndPubilsh:
+  buildImageAndPubilsh:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -28,11 +35,9 @@ jobs:
       # This is used to complete the identity challenge
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
-
     steps:
       - name: 拉取仓库
         uses: actions/checkout@v3
-
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: 安装登陆组件 cosign
@@ -82,8 +87,6 @@ jobs:
         uses: docker/metadata-action@v4.3.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        
-
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: 构建并推送
@@ -98,7 +101,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
-
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
       # repository is public to avoid leaking data.  If you would like to publish
@@ -111,8 +113,48 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
+  installAndCheckDockerEnv:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 检查Docker是否安装
+      id: check-docker
+      uses: appleboy/ssh-action@v0.1.9
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_SSH_USERNAME }}
+        password: ${{ secrets.VPS_SSH_PASSWD }}
+        port: ${{ secrets.VPS_SSH_PORT}}
+        script: |
+          if command -v docker > /dev/null 2>&1; then
+            echo "Docker is already installed on the remote server"
+            echo "::set-output name=installed::true"
+            echo "envCheckRes=true" >> $GITHUB_ENV
+          else
+            echo "Docker is not installed on the remote server"
+            echo "::set-output name=installed::false"
+          fi        
+    - name: 安装Docker
+      id: install-docker
+      if: steps.check-docker.outputs.installed == 'false'
+      uses: appleboy/ssh-action@v0.1.9
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_SSH_USERNAME }}
+        password: ${{ secrets.VPS_SSH_PASSWD }}
+        port: ${{ secrets.VPS_SSH_PORT}}
+        script: |
+          sudo apt update
+          sudo apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          sudo apt update
+          sudo apt install -y docker-ce docker-ce-cli containerd.io
+          sudo systemctl start docker
+          sudo usermod -aG docker $USER
+          echo "envCheckRes=true" >> $GITHUB_ENV
   deployDockerToRemote:
-    needs: buildAndPubilsh
+    needs: [buildImageAndPubilsh,installAndCheckDockerEnv]
+    if: ${{ env.envCheckRes == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -121,12 +163,12 @@ jobs:
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
     steps:
-      - name: 部署Docker Compose到服务器 ssh cmd
+      - name: 部署Docker到服务器
         uses: appleboy/ssh-action@v0.1.9
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_SSH_USERNAME }}
-          key: ${{ secrets.VPS_SSH_SECRET }}
+          password: ${{ secrets.VPS_SSH_PASSWD }}
           port: ${{ secrets.VPS_SSH_PORT}}
           script: |
             docker stop gpt-webot 
@@ -134,5 +176,14 @@ jobs:
             docker login ghcr.io -u ${{ secrets.DOCKER_DEPLOY_USERNAME }} -p ${{ secrets.DOCKER_DEPLOY_TOKEN }} 
             docker pull ghcr.io/baiyz0825/corp-webot:main
             docker run -d --name=gpt-webot --net=host -p 50008:50008 -v /home/byz/gpt/config:/apps/config -v /home/byz/gpt/db:/apps/db -v /home/byz/gpt/logs:/apps/logs --restart=always ghcr.io/baiyz0825/corp-webot:main
-            docker ps -al | grep gpt-webot        
+            docker ps -al | grep gpt-webot      
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: [deployDockerToRemote]
+    if: always()
+    steps:
+      - name: 清除环境
+        # 清除设置的工作流标志
+        run: echo "::unset-env envCheckRes::"
+        shell: bash            
 
