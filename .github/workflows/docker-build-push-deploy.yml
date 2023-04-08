@@ -114,6 +114,7 @@ jobs:
         # against the sigstore community Fulcio instance.
         run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
   installAndCheckDockerEnv:
+    needs: [buildImageAndPubilsh]
     runs-on: ubuntu-latest
     steps:
     - name: 检查Docker是否安装
@@ -154,7 +155,7 @@ jobs:
           echo "envCheckRes=true" >> $GITHUB_ENV
   deployDockerToRemote:
     needs: [buildImageAndPubilsh,installAndCheckDockerEnv]
-    if: ${{ env.envCheckRes == 'true' }}
+    if: ${{ envCheckRes == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
