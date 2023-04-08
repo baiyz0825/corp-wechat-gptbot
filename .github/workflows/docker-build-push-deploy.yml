@@ -117,6 +117,7 @@ jobs:
   installAndCheckDockerEnv:
     needs: [buildImageAndPubilsh]
     runs-on: ubuntu-latest
+ 
     steps:
     - name: 检查Docker是否安装
       id: check-docker
@@ -130,14 +131,13 @@ jobs:
           if command -v docker > /dev/null 2>&1; then
             echo "Docker is already installed on the remote server"
             echo "::set-output name=installed::true"
-            echo "envCheckRes=true" >> $GITHUB_ENV
           else
             echo "Docker is not installed on the remote server"
             echo "::set-output name=installed::false"
           fi        
     - name: 安装Docker
       id: install-docker
-      if: steps.check-docker.outputs.installed == 'false'
+      if: steps.check-docker.outputs.installed == false
       uses: appleboy/ssh-action@v0.1.9
       with:
         host: ${{ secrets.VPS_HOST }}
@@ -153,10 +153,8 @@ jobs:
           sudo apt install -y docker-ce docker-ce-cli containerd.io
           sudo systemctl start docker
           sudo usermod -aG docker $USER
-          echo "envCheckRes=true" >> $GITHUB_ENV
   deployDockerToRemote:
     needs: [buildImageAndPubilsh,installAndCheckDockerEnv]
-    if: ${{ env.envCheckRes }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
