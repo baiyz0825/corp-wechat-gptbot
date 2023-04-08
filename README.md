@@ -108,7 +108,8 @@ docker run -d \
   -p 8989:50008 \
   -v YouPath:/apps/config \
   -v YouPath:/apps/db \
-  -v YouPath:/apps/logs
+  -v YouPath:/apps/logs \
+  -e GIN_MODE= release \
   --restart=always \
   ghcr.io/baiyz0825/corp-webot:main
 ```
@@ -138,6 +139,8 @@ services:
     - 你的配置文件路径:/apps/config:rw 
     - 你的数据库存储路径:/apps/db:rw 
     - 你的日志路径:/apps/logs:rw     
+   environment:
+    - GIN_MODE=release
    deploy:         
     restart_policy:
       condition: on-failure
