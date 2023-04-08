@@ -156,7 +156,7 @@ jobs:
           echo "envCheckRes=true" >> $GITHUB_ENV
   deployDockerToRemote:
     needs: [buildImageAndPubilsh,installAndCheckDockerEnv]
-    if: ${{ envCheckRes == 'true' }}
+    if: env.envCheckRes
     runs-on: ubuntu-latest
     permissions:
       contents: read
