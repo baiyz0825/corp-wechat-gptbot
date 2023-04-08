@@ -16,9 +16,9 @@ env:
   LOG_LEVEL: debug
 
 jobs:
-  # 检查并且安装Dokcer环境
   installAndCheckDockerEnv:
     runs-on: ubuntu-latest
+ 
     steps:
     - name: 检查Docker是否安装
       id: check-docker
@@ -32,14 +32,13 @@ jobs:
           if command -v docker > /dev/null 2>&1; then
             echo "Docker is already installed on the remote server"
             echo "::set-output name=installed::true"
-            echo "envCheckRes=true" >> $GITHUB_ENV
           else
             echo "Docker is not installed on the remote server"
             echo "::set-output name=installed::false"
           fi        
     - name: 安装Docker
       id: install-docker
-      if: steps.check-docker.outputs.installed == 'false'
+      if: steps.check-docker.outputs.installed == false
       uses: appleboy/ssh-action@v0.1.9
       with:
         host: ${{ secrets.VPS_HOST }}
@@ -55,10 +54,8 @@ jobs:
           sudo apt install -y docker-ce docker-ce-cli containerd.io
           sudo systemctl start docker
           sudo usermod -aG docker $USER
-          echo "envCheckRes=true" >> $GITHUB_ENV           
   deployDockerToRemote:
     needs: [installAndCheckDockerEnv]
-    if: ${{ envCheckRes == 'true' }} 
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -67,17 +64,17 @@ jobs:
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
     steps:
-      - name: 部署Docker Compose到服务器 ssh cmd
+      - name: 部署Docker到服务器
         uses: appleboy/ssh-action@v0.1.9
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_SSH_USERNAME }}
-          key: ${{ secrets.VPS_SSH_SECRET }}
+          password: ${{ secrets.VPS_SSH_PASSWD }}
           port: ${{ secrets.VPS_SSH_PORT}}
           script: |
             docker stop gpt-webot 
             docker rm gpt-webot
             docker login ghcr.io -u ${{ secrets.DOCKER_DEPLOY_USERNAME }} -p ${{ secrets.DOCKER_DEPLOY_TOKEN }} 
             docker pull ghcr.io/baiyz0825/corp-webot:main
-            docker run -d --name=gpt-webot --net=host -p 50008:50008 -v /home/byz/gpt/config:/apps/config -v /home/byz/gpt/db:/apps/db -v /home/byz/gpt/logs:/apps/logs --restart=always ghcr.io/baiyz0825/corp-webot:main
-            docker ps -al | grep gpt-webot
+            docker run -d --name=gpt-webot --net=host -p 50008:50008 -e GIN_MODE=release -v /home/byz/gpt/config:/apps/config -v /home/byz/gpt/db:/apps/db -v /home/byz/gpt/logs:/apps/logs --restart=always ghcr.io/baiyz0825/corp-webot:main
+            docker ps -al | grep gpt-webot    
