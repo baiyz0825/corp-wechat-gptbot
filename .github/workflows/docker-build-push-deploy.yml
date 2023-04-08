@@ -130,14 +130,14 @@ jobs:
         script: |
           if command -v docker > /dev/null 2>&1; then
             echo "Docker is already installed on the remote server"
-            echo "::set-output name=installed::true"
+            echo "installed=true" >> $GITHUB_OUTPUT
           else
             echo "Docker is not installed on the remote server"
-            echo "::set-output name=installed::false"
+            echo "installed=false" >> $GITHUB_OUTPUT
           fi        
     - name: 安装Docker
       id: install-docker
-      if: steps.check-docker.outputs.installed == false
+      if: ${{ steps.check-docker.outputs.installed }} == false
       uses: appleboy/ssh-action@v0.1.9
       with:
         host: ${{ secrets.VPS_HOST }}
