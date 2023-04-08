@@ -34,7 +34,7 @@ func LoadWeComAppConf() {
 			Callback: config.GetSystemConf().CallBackUrl, //
 			Scopes:   nil,
 		},
-		HttpDebug: true,
+		HttpDebug: false,
 	})
 	if err != nil {
 		xlog.Log.WithError(err).Error("初始化企业微信助手失败！")
