@@ -54,7 +54,10 @@ func WxChatCommand(c *gin.Context) {
 			return
 		}
 		if userData.MsgType != "text" {
-			c.String(http.StatusBadRequest, "不支持非text类型处理")
+			// 已经返回了数据类型，这里不能返回数据，会导致错误
+			// TODO 菜单逻辑
+			// c.String(http.StatusBadRequest, "不支持非text类型处理")
+			return
 		}
 		// 检查用户是否存在，不存在创建
 		if !dao.CheckUserAndCreate(userData.FromUsername) {
