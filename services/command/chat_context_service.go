@@ -1,11 +1,13 @@
-package impl
+package command
 
 import (
 	xcache "github.com/baiyz0825/corp-webot/cache"
 	"github.com/baiyz0825/corp-webot/dao"
 	"github.com/baiyz0825/corp-webot/model"
+	"github.com/baiyz0825/corp-webot/services/wx"
 	"github.com/baiyz0825/corp-webot/to"
 	"github.com/baiyz0825/corp-webot/utils/xlog"
+	"github.com/baiyz0825/corp-webot/utils/xstring"
 	"github.com/baiyz0825/corp-webot/xconst"
 	"github.com/sirupsen/logrus"
 )
@@ -38,7 +40,7 @@ func (c ContextCommand) Exec(userData to.MsgContent) bool {
 		msgContext = context
 	}
 	// 存储之前的context到db
-	msgContextJson, err := MarshalMsgContextToJSon(userData, msgContext)
+	msgContextJson, err := xstring.MarshalMsgContextToJSon(userData, msgContext)
 	err = dao.InsertUserContext(userData.FromUsername, string(msgContextJson))
 	if err != nil {
 		xlog.Log.WithError(err).WithField("插入数据是:", string(msgContextJson)).
@@ -53,7 +55,6 @@ func (c ContextCommand) Exec(userData to.MsgContent) bool {
 	if err != nil {
 		xlog.Log.WithError(err).WithField("用户:", userData.FromUsername).Error("删除用户此次设置prompt失败")
 	}
-	SendToWxByText(userData, xconst.AI_CLEAR_CONTEXT_SUCCESS)
+	wx.SendToWxByText(userData, xconst.AI_CLEAR_CONTEXT_SUCCESS)
 	return true
 }
-

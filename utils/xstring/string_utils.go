@@ -1,14 +1,18 @@
 package xstring
 
 import (
+	"encoding/json"
 	"fmt"
 	"hash/fnv"
-	"io/ioutil"
 	"math/rand"
+	"os"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/baiyz0825/corp-webot/model"
+	"github.com/baiyz0825/corp-webot/to"
+	"github.com/baiyz0825/corp-webot/utils/xlog"
 	"github.com/common-nighthawk/go-figure"
 )
 
@@ -46,7 +50,7 @@ const chunkSize = 1024 * 1024
 
 // HashFile returns the hash value of a file
 func HashFile(filePath string) int64 {
-	data, _ := ioutil.ReadFile(filePath)
+	data, _ := os.ReadFile(filePath)
 	return HashData(data)
 }
 
@@ -54,7 +58,10 @@ func HashFile(filePath string) int64 {
 func HashData(data []byte) int64 {
 	// Compute hash of the data
 	h := fnv.New64a()
-	h.Write(data)
+	_, err := h.Write(data)
+	if err != nil {
+		return 0
+	}
 	hash := h.Sum64()
 
 	return int64(hash)
@@ -62,7 +69,7 @@ func HashData(data []byte) int64 {
 
 // HashFileConcurrently returns the hash value of a file using concurrent processing
 func HashFileConcurrently(filePath string) int64 {
-	data, _ := ioutil.ReadFile(filePath)
+	data, _ := os.ReadFile(filePath)
 	return HashDataConcurrently(data)
 }
 
@@ -89,7 +96,10 @@ func HashDataConcurrently(data []byte) int64 {
 				end = len(data)
 			}
 			chunk := data[start:end]
-			h.Write(chunk)
+			_, err := h.Write(chunk)
+			if err != nil {
+				return
+			}
 		}(i)
 	}
 	wg.Wait()
@@ -97,4 +107,25 @@ func HashDataConcurrently(data []byte) int64 {
 	// Return the hash value
 	hash := h.Sum64()
 	return int64(hash)
+}
+
+func MarshalMsgContextToJSon(userData to.MsgContent, msgContext model.MessageContext) ([]byte, error) {
+	msgContextJson, err := json.Marshal(msgContext)
+	if err != nil {
+		xlog.Log.WithError(err).WithField("序列化数据是", msgContextJson).
+			WithField("用户是:", userData.FromUsername).
+			Error("系统序列化错误")
+	}
+	return msgContextJson, err
+}
+
+func UnMarshalJSonToMsgContext(userName, data string) (*model.MessageContext, error) {
+	msgContext := &model.MessageContext{}
+	err := json.Unmarshal([]byte(data), msgContext)
+	if err != nil {
+		xlog.Log.WithError(err).WithField("反序列化数据是", data).
+			WithField("用户是:", userName).
+			Error("系统凡序列化错误")
+	}
+	return msgContext, err
 }

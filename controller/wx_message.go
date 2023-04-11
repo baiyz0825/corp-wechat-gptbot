@@ -4,8 +4,9 @@ import (
 	"encoding/xml"
 	"net/http"
 
+	"github.com/ArtisanCloud/PowerWeChat/v3/src/kernel/models"
 	"github.com/baiyz0825/corp-webot/dao"
-	"github.com/baiyz0825/corp-webot/services/impl"
+	"github.com/baiyz0825/corp-webot/services"
 	"github.com/baiyz0825/corp-webot/to"
 	"github.com/baiyz0825/corp-webot/utils/wecom"
 	"github.com/baiyz0825/corp-webot/utils/xlog"
@@ -45,18 +46,12 @@ func WxChatCommand(c *gin.Context) {
 	// 异步处理用户请求
 	go func() {
 		err = xml.Unmarshal(userDataDecrypt, &userData)
-		// 检测缓存
-		if impl.CheckCacheUserEchoReq(userData) {
-			return
-		}
 		if err != nil {
 			xlog.Log.WithError(err).Error("反序列化用户数据错误")
 			return
 		}
-		if userData.MsgType != "text" {
-			// 已经返回了数据类型，这里不能返回数据，会导致错误
-			// TODO 菜单逻辑
-			// c.String(http.StatusBadRequest, "不支持非text类型处理")
+		// 检测缓存
+		if services.CheckCacheUserEchoReq(userData) {
 			return
 		}
 		// 检查用户是否存在，不存在创建
@@ -64,13 +59,14 @@ func WxChatCommand(c *gin.Context) {
 			xlog.Log.WithField("用户信息", userData.FromUsername).Errorf("创建用户失败")
 			return
 		}
-		// 处理数据
-		ok := impl.GetCommand(userData.Content).Exec(userData)
-		if !ok {
-			xlog.Log.WithField("data:", userData).Error("执行指令失败！")
-			return
+		// 分发消息类型 进行处理
+		switch userData.MsgType {
+		case models.CALLBACK_MSG_TYPE_TEXT:
+			// 处理text消息
+			services.DoTextMsg(userData)
+		case models.CALLBACK_MSG_TYPE_EVENT:
+			// 处理事件消息
+			services.DoEventMsg(userDataDecrypt)
 		}
-		xlog.Log.WithField("data:", userData).Debug("执行指令成功！")
-		return
 	}()
 }

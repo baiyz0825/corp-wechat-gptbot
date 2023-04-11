@@ -23,7 +23,13 @@ type MsgContent struct {
 	MsgType      string `xml:"MsgType"`
 	Content      string `xml:"Content"`
 	Msgid        string `xml:"MsgId"`
-	Agentid      uint32 `xml:"AgentId"`
+	Agentid      string `xml:"AgentId"`
+}
+
+type SimpleEvent struct {
+	MsgContent
+	Event    string `xml:"Event"`
+	EventKey string `xml:"EventKey"`
 }
 
 // ChatCompletionMessage 请求与响应Message
