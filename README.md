@@ -7,7 +7,8 @@
 - 支持生成图片
 - 支持设置自己的Prompt
 - 支持导出聊天记录（目前为导出最新一批聊天记录，后续支持导出选择某一次｜全部）
-** 快捷命令可以使用微信菜单创建，详细参考下文 **
+<font color="red">快捷命令可以直接使用微信菜单触发，详细参考下文</font>
+![image](https://user-images.githubusercontent.com/81071870/231260124-c3af3b1e-299e-41ab-8ccf-b66404171dae.png)
 使用命令：
 1. @help：帮助菜单 -> 例子：@help
 获取系统指令菜单
@@ -108,6 +109,12 @@ GPT3Babbage             = "babbage"
 curl --request POST \
   --url 'https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=你的企业id&corpsecret=你的应用secret'
 ```
+企业id：
+![image](https://user-images.githubusercontent.com/81071870/231260737-b9ad4eb9-871b-4574-b63e-92f374b9e533.png)
+
+应用secret:
+![image](https://user-images.githubusercontent.com/81071870/231260620-d6601e65-9aef-497a-990a-5bf54b5647b0.png)
+
 2. 配置菜单：https://developer.work.weixin.qq.com/document/path/90231
 ```shell
 # 示例curl
@@ -139,6 +146,8 @@ curl --request POST \
     ]
 }'
 ```
+应用id：
+![应用id](https://user-images.githubusercontent.com/81071870/231260435-739bcbf4-c1de-47c0-bf95-6e6fca1c1d71.png)
 ## 使用Docker
 ```sh
 docker run -d \
