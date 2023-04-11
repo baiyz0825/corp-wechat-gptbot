@@ -161,7 +161,7 @@ docker run -d \
   -v YouPath:/apps/logs \
   -e GIN_MODE= release \
   --restart=always \
-  ghcr.io/baiyz0825/corp-webot:main
+  ghcr.io/baiyz0825/corp-wechat-gptbot:main
 ```
 示例：
 ```shell
@@ -173,7 +173,7 @@ docker run -d \
 -v /home/byz/gpt/db:/apps/db \
 -v /home/byz/gpt/logs:/apps/logs \
 --restart=always \
-ghcr.io/baiyz0825/corp-webot:main
+ghcr.io/baiyz0825/corp-wechat-gptbot:main
 ```
 ## 使用Docker Compose
 1. 下载仓库中的docker-composer.yaml
@@ -182,7 +182,7 @@ version: '3.8'
 services: 
   crop-gpt-bot:
    container_name: gpt-bot
-   image: ghcr.io/baiyz0825/corp-webot:main
+   image: ghcr.io/baiyz0825/corp-wechat-gptbot:main
    ports:
     - "本机端口":"50008"
    volumes:
