@@ -1,7 +1,7 @@
 package command
 
 import (
-	"github.com/baiyz0825/corp-webot/services/impl"
+	"github.com/baiyz0825/corp-webot/services/wx"
 	"github.com/baiyz0825/corp-webot/to"
 	"github.com/baiyz0825/corp-webot/xconst"
 )
@@ -19,6 +19,6 @@ func NewHelpCommandCommand() *HelpCommand {
 // @param userData
 // @return bool
 func (n HelpCommand) Exec(userData to.MsgContent) bool {
-	impl.SendToWxByText(userData, xconst.GetDefaultNoticeMenu())
+	wx.SendToWxByText(userData, xconst.GetDefaultNoticeMenu())
 	return true
 }

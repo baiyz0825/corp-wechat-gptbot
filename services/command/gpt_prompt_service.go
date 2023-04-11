@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/baiyz0825/corp-webot/dao"
-	"github.com/baiyz0825/corp-webot/services/impl"
+	"github.com/baiyz0825/corp-webot/services/wx"
 	"github.com/baiyz0825/corp-webot/to"
 	"github.com/baiyz0825/corp-webot/utils/xlog"
 	"github.com/baiyz0825/corp-webot/xconst"
@@ -24,9 +24,9 @@ func (g GPTPromptCommand) Exec(userData to.MsgContent) bool {
 	err := dao.UpdateUser(userData.Content, userData.FromUsername)
 	if err != nil {
 		xlog.Log.WithError(err).WithField("用户:", userData.FromUsername).Error("设置用户自定义提示词失败")
-		impl.SendToWxByText(userData, xconst.AI_DEFAULT_MSG)
+		wx.SendToWxByText(userData, xconst.AI_DEFAULT_MSG)
 		return false
 	}
-	impl.SendToWxByText(userData, xconst.AI_KNOWN_YOUR_ASK)
+	wx.SendToWxByText(userData, xconst.AI_KNOWN_YOUR_ASK)
 	return true
 }

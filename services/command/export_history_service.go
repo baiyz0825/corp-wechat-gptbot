@@ -7,11 +7,11 @@ import (
 
 	"github.com/baiyz0825/corp-webot/dao"
 	"github.com/baiyz0825/corp-webot/model"
-	"github.com/baiyz0825/corp-webot/services/impl"
 	"github.com/baiyz0825/corp-webot/to"
 	"github.com/baiyz0825/corp-webot/utils/doc"
 	"github.com/baiyz0825/corp-webot/utils/wecom"
 	"github.com/baiyz0825/corp-webot/utils/xlog"
+	"github.com/baiyz0825/corp-webot/utils/xstring"
 	"github.com/baiyz0825/corp-webot/xconst"
 	"github.com/pkg/errors"
 )
@@ -58,7 +58,7 @@ func (e ExportHistoryCommand) Exec(userData to.MsgContent) bool {
 //	@return error
 func SearchHistoryAndGenPDF(context *dao.Context, err error, username string) ([]byte, error) {
 	contentLastModTime := context.UpdateTime
-	msgContext, err := impl.UnMarshalJSonToMsgContext(context.Name, context.ContextMsg)
+	msgContext, err := xstring.UnMarshalJSonToMsgContext(context.Name, context.ContextMsg)
 	if err != nil {
 		xlog.Log.WithField("用户:", username).WithError(err).Error("导出历史记录系统错误！")
 		return nil, err

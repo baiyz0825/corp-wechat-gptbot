@@ -6,7 +6,7 @@ import (
 
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/kernel/models"
 	"github.com/baiyz0825/corp-webot/dao"
-	"github.com/baiyz0825/corp-webot/services/impl"
+	"github.com/baiyz0825/corp-webot/services"
 	"github.com/baiyz0825/corp-webot/to"
 	"github.com/baiyz0825/corp-webot/utils/wecom"
 	"github.com/baiyz0825/corp-webot/utils/xlog"
@@ -46,12 +46,12 @@ func WxChatCommand(c *gin.Context) {
 	// 异步处理用户请求
 	go func() {
 		err = xml.Unmarshal(userDataDecrypt, &userData)
-		// 检测缓存
-		if impl.CheckCacheUserEchoReq(userData) {
-			return
-		}
 		if err != nil {
 			xlog.Log.WithError(err).Error("反序列化用户数据错误")
+			return
+		}
+		// 检测缓存
+		if services.CheckCacheUserEchoReq(userData) {
 			return
 		}
 		// 检查用户是否存在，不存在创建
@@ -63,10 +63,10 @@ func WxChatCommand(c *gin.Context) {
 		switch userData.MsgType {
 		case models.CALLBACK_MSG_TYPE_TEXT:
 			// 处理text消息
-			impl.DoTextMsg(userData)
+			services.DoTextMsg(userData)
 		case models.CALLBACK_MSG_TYPE_EVENT:
 			// 处理事件消息
-			impl.DoEventMsg(userData, userDataDecrypt)
+			services.DoEventMsg(userDataDecrypt)
 		}
 	}()
 }

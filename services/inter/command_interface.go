@@ -13,5 +13,5 @@ type SystemCmd interface {
 // CropEvent
 // @Description: 事件处理
 type CropEvent interface {
-	Exec(eventData []byte, userData *to.MsgContent) bool
+	Exec(eventData []byte, userData to.SimpleEvent) bool
 }
