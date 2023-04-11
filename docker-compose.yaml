@@ -2,7 +2,7 @@ version: '3.8'
 services: 
   crop-gpt-bot:
    container_name: gpt-bot
-   image: ghcr.io/baiyz0825/corp-webot:main
+   image: ghcr.io/baiyz0825/corp-wechat-gptbot:main
    ports:
     - "50008":"50008"
    volumes:
