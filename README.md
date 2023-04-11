@@ -7,7 +7,8 @@
 - 支持生成图片
 - 支持设置自己的Prompt
 - 支持导出聊天记录（目前为导出最新一批聊天记录，后续支持导出选择某一次｜全部）
-<font color="red">快捷命令可以直接使用微信菜单触发，详细参考下文</font>
+
+> ***快捷命令可以直接使用微信菜单触发，详细参考下文***
 ![image](https://user-images.githubusercontent.com/81071870/231260124-c3af3b1e-299e-41ab-8ccf-b66404171dae.png)
 使用命令：
 1. @help：帮助菜单 -> 例子：@help
