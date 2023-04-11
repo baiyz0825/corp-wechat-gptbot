@@ -7,6 +7,7 @@
 - 支持生成图片
 - 支持设置自己的Prompt
 - 支持导出聊天记录（目前为导出最新一批聊天记录，后续支持导出选择某一次｜全部）
+** 快捷命令可以使用微信菜单创建，详细参考下文 **
 使用命令：
 1. @help：帮助菜单 -> 例子：@help
 获取系统指令菜单
@@ -99,7 +100,45 @@ GPT3Babbage             = "babbage"
 4. **后置操作**（服务正常启动之后再，点击保存API回掉）
 ![image](https://user-images.githubusercontent.com/81071870/230324760-b55e40aa-8c08-4c6a-a212-b66bcbb735fb.png)
 
-
+#### 微信菜单制作
+微信官方接口文档：
+1. 获取应用Token：https://developer.work.weixin.qq.com/document/path/91039
+```shell
+# 示例curl 
+curl --request POST \
+  --url 'https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=你的企业id&corpsecret=你的应用secret'
+```
+2. 配置菜单：https://developer.work.weixin.qq.com/document/path/90231
+```shell
+# 示例curl
+curl --request POST \
+  --url 'https://qyapi.weixin.qq.com/cgi-bin/menu/create?access_token=你的accessToken&agentid=你的应用id' \
+  --header 'content-type: application/json' \
+  --data '{
+    "button": [
+        {
+            "name": "快捷指令",
+            "sub_button":[
+                {
+                    "type": "click",
+                    "name": "清除上下文",
+                    "key": "@clear"
+                },
+                {
+                    "type": "click",
+                    "name": "导出",
+                    "key": "@export"
+                },
+                {
+                    "type": "click",
+                    "name": "帮助",
+                    "key": "@help"
+                }
+            ]
+        }
+    ]
+}'
+```
 ## 使用Docker
 ```sh
 docker run -d \
