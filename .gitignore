@@ -1,3 +1,5 @@
 .idea
 .db
 .log
+/config/config.yaml
+/db/

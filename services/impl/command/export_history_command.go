@@ -1,4 +1,4 @@
-package impl
+package command
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/baiyz0825/corp-webot/dao"
 	"github.com/baiyz0825/corp-webot/model"
+	"github.com/baiyz0825/corp-webot/services/impl"
 	"github.com/baiyz0825/corp-webot/to"
 	"github.com/baiyz0825/corp-webot/utils/doc"
 	"github.com/baiyz0825/corp-webot/utils/wecom"
@@ -48,16 +49,16 @@ func (e ExportHistoryCommand) Exec(userData to.MsgContent) bool {
 }
 
 // SearchHistoryAndGenPDF
-//  @Description: 生成导出的pdf Byte文件
-//  @param context
-//  @param err
-//  @param username
-//  @return []byte
-//  @return error
 //
+//	@Description: 生成导出的pdf Byte文件
+//	@param context
+//	@param err
+//	@param username
+//	@return []byte
+//	@return error
 func SearchHistoryAndGenPDF(context *dao.Context, err error, username string) ([]byte, error) {
 	contentLastModTime := context.UpdateTime
-	msgContext, err := UnMarshalJSonToMsgContext(context.Name, context.ContextMsg)
+	msgContext, err := impl.UnMarshalJSonToMsgContext(context.Name, context.ContextMsg)
 	if err != nil {
 		xlog.Log.WithField("用户:", username).WithError(err).Error("导出历史记录系统错误！")
 		return nil, err
@@ -121,11 +122,11 @@ func GetChatRoleHeader(role string, userName string, key int) string {
 }
 
 // GetChatContentByRole
-//  @Description: 获取格式化的聊天内容
-//  @param content
-//  @param role
-//  @return string
 //
+//	@Description: 获取格式化的聊天内容
+//	@param content
+//	@param role
+//	@return string
 func GetChatContentByRole(content string, role string) string {
 	switch role {
 	case model.AI:
@@ -136,10 +137,10 @@ func GetChatContentByRole(content string, role string) string {
 }
 
 // GetGenDocTitle
-//  @Description: 获取文件标题
-//  @param userName
-//  @return string
 //
+//	@Description: 获取文件标题
+//	@param userName
+//	@return string
 func GetGenDocTitle(userName string) string {
 	return userName + "对话内容"
 }

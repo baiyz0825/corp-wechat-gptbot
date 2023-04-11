@@ -1,4 +1,4 @@
-package impl
+package command
 
 import (
 	"encoding/json"
@@ -8,6 +8,7 @@ import (
 	"github.com/baiyz0825/corp-webot/config"
 	"github.com/baiyz0825/corp-webot/dao"
 	"github.com/baiyz0825/corp-webot/model"
+	"github.com/baiyz0825/corp-webot/services/impl"
 	"github.com/baiyz0825/corp-webot/to"
 	"github.com/baiyz0825/corp-webot/utils/openaiutils"
 	"github.com/baiyz0825/corp-webot/utils/xlog"
@@ -36,9 +37,9 @@ func (c GPTChatCommand) Exec(userData to.MsgContent) bool {
 	mode := config.GetSystemConf().MsgMode
 	switch mode {
 	case "markdown":
-		return SendToWxByMarkdown(userData, respOpenAI)
+		return impl.SendToWxByMarkdown(userData, respOpenAI)
 	case "text":
-		return SendToWxByText(userData, respOpenAI)
+		return impl.SendToWxByText(userData, respOpenAI)
 	default:
 		return false
 	}

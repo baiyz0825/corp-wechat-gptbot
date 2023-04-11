@@ -6,9 +6,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ArtisanCloud/PowerWeChat/v3/src/work/server/handlers/models"
 	xcache "github.com/baiyz0825/corp-webot/cache"
 	"github.com/baiyz0825/corp-webot/model"
-	"github.com/baiyz0825/corp-webot/services/inter"
+	cmd "github.com/baiyz0825/corp-webot/services/impl/command"
+	"github.com/baiyz0825/corp-webot/services/impl/event"
 	"github.com/baiyz0825/corp-webot/to"
 	"github.com/baiyz0825/corp-webot/utils/wecom"
 	"github.com/baiyz0825/corp-webot/utils/xlog"
@@ -17,33 +19,52 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type Command struct {
-	cmd inter.CropWxTextCommand
-}
-
-func (n Command) Exec(userData to.MsgContent) bool {
-	return n.cmd.Exec(userData)
-}
-
-// GetCommand
-// @Description: 获取指令服务
+// DoTextMsg
+// @Description: Text消息逻辑
 // @param cmd
-func GetCommand(contentStr string) *Command {
-	command := &Command{}
-	if strings.HasPrefix(contentStr, xconst.COMMAN_GPT_DELETE_CONTEXT) {
-		command.cmd = NewContextCommand()
-	} else if strings.HasPrefix(contentStr, xconst.COMMAND_HELP) {
-		command.cmd = NewHelpCommandCommand()
-	} else if strings.HasPrefix(contentStr, xconst.COMMAN_GPT_IMAGE) {
-		command.cmd = NewGPTImageCommand()
-	} else if strings.HasPrefix(contentStr, xconst.COMMAN_GPT_PROMPT_SET) {
-		command.cmd = NewGPTPromptCommand()
-	} else if strings.HasPrefix(contentStr, xconst.COMMAN_GPT_EXPORT) {
-		command.cmd = NewExportHistoryCommand()
+func DoTextMsg(userData to.MsgContent) {
+	ok := false
+	if strings.HasPrefix(userData.Content, xconst.COMMAN_GPT_DELETE_CONTEXT) {
+		ok = cmd.NewContextCommand().Exec(userData)
+	} else if strings.HasPrefix(userData.Content, xconst.COMMAND_HELP) {
+		ok = cmd.NewHelpCommandCommand().Exec(userData)
+	} else if strings.HasPrefix(userData.Content, xconst.COMMAN_GPT_IMAGE) {
+		ok = cmd.NewGPTImageCommand().Exec(userData)
+	} else if strings.HasPrefix(userData.Content, xconst.COMMAN_GPT_PROMPT_SET) {
+		ok = cmd.NewGPTPromptCommand().Exec(userData)
+	} else if strings.HasPrefix(userData.Content, xconst.COMMAN_GPT_EXPORT) {
+		ok = cmd.NewExportHistoryCommand().Exec(userData)
 	} else {
-		command.cmd = NewGPTCommand()
+		ok = cmd.NewGPTCommand().Exec(userData)
 	}
-	return command
+	if !ok {
+		xlog.Log.WithField("data:", userData).Error("执行指令失败！")
+	}
+	xlog.Log.WithField("data:", userData).Debug("执行指令成功！")
+	return
+}
+
+// DoEventMsg
+// @Description: 事件消息逻辑
+// @param contentStr
+func DoEventMsg(userData to.MsgContent, eventData []byte) {
+	ok := false
+	switch userData.MsgType {
+	// 点击事件
+	case models.CALLBACK_EVENT_CLICK:
+		ok = event.NewClickEventServiceImpl().Exec(eventData, userData)
+	default:
+		{
+			// 不支持返回
+			xlog.Log.WithField("data:", userData).Info("不支持该事件！")
+			return
+		}
+	}
+	// 执行失败日志
+	if !ok {
+		xlog.Log.WithField("data:", userData).Error("执行指令失败！")
+	}
+	return
 }
 
 // SendToWxByMarkdown 使用markdown发送
