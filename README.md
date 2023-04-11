@@ -10,7 +10,8 @@
 
 > ***快捷命令可以直接使用微信菜单触发，详细参考下文***
 ![image](https://user-images.githubusercontent.com/81071870/231260124-c3af3b1e-299e-41ab-8ccf-b66404171dae.png)
-使用命令：
+
+手动使用命令：
 1. @help：帮助菜单 -> 例子：@help
 获取系统指令菜单
 2. @clear：清除聊天上下文 -> 例子：@clear   
