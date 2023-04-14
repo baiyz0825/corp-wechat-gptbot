@@ -159,7 +159,7 @@ docker run -d \
   -v YouPath:/apps/config \
   -v YouPath:/apps/db \
   -v YouPath:/apps/logs \
-  -e GIN_MODE= release \
+  -e GIN_MODE=release \
   --restart=always \
   ghcr.io/baiyz0825/corp-wechat-gptbot:main
 ```
@@ -172,6 +172,7 @@ docker run -d \
 -v /home/byz/gpt/config:/apps/config \
 -v /home/byz/gpt/db:/apps/db \
 -v /home/byz/gpt/logs:/apps/logs \
+-e GIN_MODE=release \
 --restart=always \
 ghcr.io/baiyz0825/corp-wechat-gptbot:main
 ```
