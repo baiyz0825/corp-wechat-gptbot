@@ -114,9 +114,9 @@ jobs:
       - name: 获取制品信息
         id: get-package-data-wx-msg
         run: |
-          echo "user_email=$(git log -n 1 --pretty=format:%ae)" >> $GITHUB_OUTPUT
-          echo "user_name=$(git log -1 --pretty=format:'%an')" >> $GITHUB_OUTPUT
-          echo "commit_msg=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+          echo "user_email=$(git log -n 1 --pretty=format:%ae)" >> $env:GITHUB_OUTPUT
+          echo "user_name=$(git log -1 --pretty=format:'%an')" >> $env:GITHUB_OUTPUT
+          echo "commit_msg=$(git log -1 --pretty=%B)" >> $env:GITHUB_OUTPUT
       - name: 推送制品打包完成通知
         uses: chf007/action-wechat-work@master
         env:
