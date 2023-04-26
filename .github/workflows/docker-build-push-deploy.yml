@@ -111,7 +111,7 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
-      - name: 获取制品WX推送信息
+      - name: 获取制品信息
         id: get-package-data-wx-msg
         run: |
           echo "user_email=$(git log -n 1 --pretty=format:%ae)" >> $GITHUB_OUTPUT
