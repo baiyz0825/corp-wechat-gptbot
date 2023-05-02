@@ -93,7 +93,7 @@ func SendMarkdownToUSer(userName string, respMsg string) *response.ResponseMessa
 			DuplicateCheckInterval: 1800,
 		},
 		Markdown: &request.RequestMarkdown{
-			Content: xstring.TransBytesToMarkdownStr(respMsg),
+			Content: respMsg,
 		},
 	}
 	// 发送微信消息
@@ -105,7 +105,7 @@ func SendMarkdownToUSer(userName string, respMsg string) *response.ResponseMessa
 	return resp
 }
 
-// SendTextToUSer 发送Markdown消息
+// SendTextToUSer 发送text消息
 func SendTextToUSer(userName string, respMsg string) *response.ResponseMessageSend {
 	// 封装微信消息体
 	messages := &request.RequestMessageSendText{
