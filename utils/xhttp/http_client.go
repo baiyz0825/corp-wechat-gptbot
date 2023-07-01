@@ -28,7 +28,6 @@ func init() {
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 				Proxy:           http.ProxyURL(parseUrl),
 			}
-			return
 		}
 	}
 	// 未设置代理或者不可用
