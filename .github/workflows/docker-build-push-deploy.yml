@@ -191,7 +191,6 @@ jobs:
           script: |
             docker stop gpt-webot 
             docker rm gpt-webot
-            docker login ghcr.io -u ${{ secrets.DOCKER_DEPLOY_USERNAME }} -p ${{ secrets.DOCKER_DEPLOY_TOKEN }} 
             docker pull byz0825/corp-wechat-gptbot:latest
             docker run -d --name=gpt-webot --net=host -p 50008:50008 -e GIN_MODE=release -v /home/byz/gpt/config:/apps/config -v /home/byz/gpt/db:/apps/db -v /home/byz/gpt/logs:/apps/logs --restart=always byz0825/corp-wechat-gptbot:latest
             docker ps -al | grep gpt-webot

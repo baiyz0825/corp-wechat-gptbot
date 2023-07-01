@@ -16,12 +16,12 @@
 
 手动使用命令：
 1. @help：帮助菜单 -> 例子：@help
-获取系统指令菜单
+   获取系统指令菜单
 2. @clear：清除聊天上下文 -> 例子：@clear   
-清除当前会话的角色设置，以及当前聊天上下文信息
+   清除当前会话的角色设置，以及当前聊天上下文信息
 3. @image: 根据你的描述生成图片 -> 例子：@image 生成一只黑色的猫
 4. @prompt-set：设置默认角色描述 -> 例子：@prompt-set 你是一个资深的程序员
-设置系统提示词，充当角色
+   设置系统提示词，充当角色
 5. @export：导出你的本次对话内容 -> 例子：@export
 > **注意：每次只会导出最新的一条对话记录，暂不支持删除全部服务端历史记录**
 导出对话内容为pdf
@@ -31,13 +31,13 @@
 另外如果觉得有需要改进的地方，可以提Issu，空闲时间会看
 # 创建合理提示词语
 - [ChatGPT Shortcut - 简单易用的 ChatGPT 快捷指令表，让生产力倍增！标签筛选、关键词搜索和一键复制 Prompts | Tag filtering, keyword search, and one-click copy prompts (newzone.top)](https://ai.newzone.top/)
-![image](https://user-images.githubusercontent.com/81071870/230319572-d2311d44-4786-4be2-a87b-d53355d0f49f.png)
+  ![image](https://user-images.githubusercontent.com/81071870/230319572-d2311d44-4786-4be2-a87b-d53355d0f49f.png)
 
 - [ChatGPT Prompt Generator - a Hugging Face Space by merve](https://huggingface.co/spaces/merve/ChatGPT-prompt-generator)
-![image](https://user-images.githubusercontent.com/81071870/230319636-7e1c32f3-b1d5-495e-81b0-07065b71aae8.png)
+  ![image](https://user-images.githubusercontent.com/81071870/230319636-7e1c32f3-b1d5-495e-81b0-07065b71aae8.png)
 
 - [设计师灵感助手 (aigenprompt.com)](https://www.aigenprompt.com/zh-CN)
-![image](https://user-images.githubusercontent.com/81071870/230319851-c4d8c613-c1ce-471f-b8e1-ba73a53dc598.png)
+  ![image](https://user-images.githubusercontent.com/81071870/230319851-c4d8c613-c1ce-471f-b8e1-ba73a53dc598.png)
 
 > 更多GPT技巧可以参考：[gpt中文调教指南](https://github.com/yzfly/awesome-chatgpt-zh)
 # 部署方式 && 配置
@@ -75,36 +75,36 @@ weConfig:
 ```go
 package openai
 const (
-GPT432K0314             = "gpt-4-32k-0314"
-GPT432K                 = "gpt-4-32k"
-GPT40314                = "gpt-4-0314"
-GPT4                    = "gpt-4"
-GPT3Dot5Turbo0301       = "gpt-3.5-turbo-0301"
-GPT3Dot5Turbo           = "gpt-3.5-turbo"
-GPT3TextDavinci003      = "text-davinci-003"
-GPT3TextDavinci002      = "text-davinci-002"
-GPT3TextCurie001        = "text-curie-001"
-GPT3TextBabbage001      = "text-babbage-001"
-GPT3TextAda001          = "text-ada-001"
-GPT3TextDavinci001      = "text-davinci-001"
-GPT3DavinciInstructBeta = "davinci-instruct-beta"
-GPT3Davinci             = "davinci"
-GPT3CurieInstructBeta   = "curie-instruct-beta"
-GPT3Curie               = "curie"
-GPT3Ada                 = "ada"
-GPT3Babbage             = "babbage"
+	GPT432K0314             = "gpt-4-32k-0314"
+	GPT432K                 = "gpt-4-32k"
+	GPT40314                = "gpt-4-0314"
+	GPT4                    = "gpt-4"
+	GPT3Dot5Turbo0301       = "gpt-3.5-turbo-0301"
+	GPT3Dot5Turbo           = "gpt-3.5-turbo"
+	GPT3TextDavinci003      = "text-davinci-003"
+	GPT3TextDavinci002      = "text-davinci-002"
+	GPT3TextCurie001        = "text-curie-001"
+	GPT3TextBabbage001      = "text-babbage-001"
+	GPT3TextAda001          = "text-ada-001"
+	GPT3TextDavinci001      = "text-davinci-001"
+	GPT3DavinciInstructBeta = "davinci-instruct-beta"
+	GPT3Davinci             = "davinci"
+	GPT3CurieInstructBeta   = "curie-instruct-beta"
+	GPT3Curie               = "curie"
+	GPT3Ada                 = "ada"
+	GPT3Babbage             = "babbage"
 )
 ```
 
 ### 企业微信侧
 1. 进入：![image](https://user-images.githubusercontent.com/81071870/230323457-1a37ea0a-0b5f-41e8-ac3e-fc0a499d2ce6.png)
 2. 获取回掉地址 && 回掉Token
-![image](https://user-images.githubusercontent.com/81071870/230323318-05c199bf-bd9b-4449-aa3c-08c4ff1c7389.png)
-**这里回掉地址请求路径是`你的ip或者域名:端口/gpt` 服务部署之后可以浏览器访问 `你的ip或者域名:端口/test`响应为pong则正常**
+   ![image](https://user-images.githubusercontent.com/81071870/230323318-05c199bf-bd9b-4449-aa3c-08c4ff1c7389.png)
+   **这里回掉地址请求路径是`你的ip或者域名:端口/gpt` 服务部署之后可以浏览器访问 `你的ip或者域名:端口/test`响应为pong则正常**
 3. 获取corpSecret && 应用id
-![image](https://user-images.githubusercontent.com/81071870/230324473-c16c5065-2080-49ec-8321-42d26065ec3b.png)
+   ![image](https://user-images.githubusercontent.com/81071870/230324473-c16c5065-2080-49ec-8321-42d26065ec3b.png)
 4. **后置操作**（服务正常启动之后再，点击保存API回掉）
-![image](https://user-images.githubusercontent.com/81071870/230324760-b55e40aa-8c08-4c6a-a212-b66bcbb735fb.png)
+   ![image](https://user-images.githubusercontent.com/81071870/230324760-b55e40aa-8c08-4c6a-a212-b66bcbb735fb.png)
 
 #### 微信菜单制作
 微信官方接口文档：
@@ -153,7 +153,7 @@ curl --request POST \
 ```
 应用id：
 ![应用id](https://user-images.githubusercontent.com/81071870/231260435-739bcbf4-c1de-47c0-bf95-6e6fca1c1d71.png)
-## 使用Docker
+## 使用Docker GHCR
 ```sh
 docker run -d \
   --name=gpt-webot \
@@ -164,7 +164,20 @@ docker run -d \
   -v YouPath:/apps/logs \
   -e GIN_MODE=release \
   --restart=always \
-  ghcr.io/baiyz0825/corp-wechat-gptbot:main
+  ghcr.io/baiyz0825/corp-wechat-gptbot:latest
+```
+## 使用Docker Hub
+```sh
+docker run -d \
+  --name=gpt-webot \
+  --net=host \
+  -p 8989:50008 \
+  -v YouPath:/apps/config \
+  -v YouPath:/apps/db \
+  -v YouPath:/apps/logs \
+  -e GIN_MODE=release \
+  --restart=always \
+  byz0825/corp-wechat-gptbot:latest
 ```
 示例：
 ```shell
@@ -177,33 +190,33 @@ docker run -d \
 -v /home/byz/gpt/logs:/apps/logs \
 -e GIN_MODE=release \
 --restart=always \
-ghcr.io/baiyz0825/corp-wechat-gptbot:main
+byz0825/corp-wechat-gptbot:latest
 ```
 ## 使用Docker Compose
 1. 下载仓库中的docker-composer.yaml
 ```yaml
 version: '3.8'
-services: 
+services:
   crop-gpt-bot:
-   container_name: gpt-bot
-   image: ghcr.io/baiyz0825/corp-wechat-gptbot:main
-   ports:
-    - "本机端口":"50008"
-   volumes:
-    - 你的配置文件路径:/apps/config:rw 
-    - 你的数据库存储路径:/apps/db:rw 
-    - 你的日志路径:/apps/logs:rw     
-   environment:
-    - GIN_MODE=release
-   deploy:         
-    restart_policy:
-      condition: on-failure
-      delay: 5s
-      max_attempts: 3
-      window: 120s     
-   restart: always
-   networks:
-     - host # bridge/host
+    container_name: gpt-bot
+    image: byz0825/corp-wechat-gptbot:latest
+    ports:
+      - "本机端口":"50008"
+    volumes:
+      - 你的配置文件路径:/apps/config:rw
+      - 你的数据库存储路径:/apps/db:rw
+      - 你的日志路径:/apps/logs:rw
+    environment:
+      - GIN_MODE=release
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    restart: always
+    networks:
+      - host # bridge/host
 ```
 2. 执行 `docker compose -f 你的路径/docker-compose.yaml up -d`
 3. 查看运行状态 `docker compose ps`
