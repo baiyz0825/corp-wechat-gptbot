@@ -37,9 +37,16 @@ RUN mkdir /apps/db
 RUN echo 'Asia/Shanghai' >/etc/timezone
 # 设置编码
 ENV LANG C.UTF-8
+# 捕获 SIGINT 和 SIGTERM 信号。当容器接收到这两个信号时，会执行 exit 命令，即终止当前正在运行的进程。
+# 捕获 EXIT 信号。当容器即将退出时，会执行 kill 0 命令，即终止当前进程组中的所有进程。
+RUN echo '#!/bin/sh\n\
+             trap "exit" INT TERM\n\
+             trap "kill 0" EXIT\n\
+             /apps/bot\n' > /apps/run.sh
+RUN chmod +x /apps/run.sh
 # 暴露端口
 EXPOSE 50008 40000
-ENTRYPOINT ["/apps/bot"]
+ENTRYPOINT ["/apps/run.sh"]
 # go dlv调试
 #CMD ["/dlv", "--listen=:40000", "--headless=true", "--api-version=2", "--accept-multiclient", "exec", "/apps/bot"]
 
