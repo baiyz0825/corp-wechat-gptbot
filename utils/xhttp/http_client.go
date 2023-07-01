@@ -26,17 +26,15 @@ func init() {
 		if CheckServer(parseUrl.Host) && err == nil {
 			xlog.Log.Info("代理Url获取成功，本次将使用代理")
 			HttpClient.Transport = &http.Transport{
-				Timeout:         time.Second * 120,
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 				Proxy:           http.ProxyURL(parseUrl),
 			}
 			return
 		}
-	} 
+	}
 	// 未设置代理或者不可用
 	xlog.Log.Infof("客户端Http代理未设置设置，本次将不使用代理")
 	HttpClient.Transport = &http.Transport{
-		Timeout:         time.Second * 120,
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	return
