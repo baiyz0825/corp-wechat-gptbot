@@ -2,7 +2,6 @@ package xhttp
 
 import (
 	"crypto/tls"
-	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -23,15 +22,20 @@ func init() {
 	if len(proxy) > 0 {
 		parseUrl, err := url.Parse(proxy)
 		if err == nil {
-			xlog.Log.Info("代理Url获取成功，本次将使用代理")
 			HttpClient.Transport = &http.Transport{
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 				Proxy:           http.ProxyURL(parseUrl),
 			}
+			// 检查代理是否可用
+			CheckProxy()
+			return
 		}
 	}
-	// 未设置代理或者不可用
-	CheckProxy()
+	// 未设置代理
+	xlog.Log.Infof("未设置代理启动!")
+	HttpClient.Transport = &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	return
 }
 
@@ -41,21 +45,12 @@ func CheckProxy() {
 	resp, err := HttpClient.Get("https://www.google.com/")
 	if err != nil {
 		// 处理请求错误
-		xlog.Log.Infof("测试代理请求错误:%s", err)
+		xlog.Log.Errorf("测试代理请求错误:%s", err)
+		xlog.Log.Fatalf("代理检测失败！请重新配置！")
 	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-		}
-	}(resp.Body)
+	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusOK {
-		xlog.Log.Infof("代理可用")
-		return
-	}
-	xlog.Log.Infof("代理不可用，状态码:%d", resp.StatusCode)
-	xlog.Log.Infof("客户端Http代理未设置或不能使用，***** 本次将不使用代理启动 *****")
-	HttpClient.Transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		xlog.Log.Infof("代理可用，设置代理启动!")
 	}
 	return
 }
