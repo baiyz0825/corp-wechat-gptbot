@@ -15,6 +15,9 @@ var openaiClient *openai.Client
 func init() {
 	xlog.Log.Info("初始化openai工具SDK......")
 	clientConfig := openai.DefaultConfig(config.GetGptConf().Apikey)
+	if len(config.GetGptConf().URL) > 0 {
+		clientConfig.BaseURL = config.GetGptConf().URL
+	}
 	clientConfig.HTTPClient = xhttp.HttpClient
 	openaiClient = openai.NewClientWithConfig(clientConfig)
 }
