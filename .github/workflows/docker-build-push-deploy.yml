@@ -19,8 +19,6 @@ permissions:
   checks: write
 
 env:
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
   LOG_LEVEL: debug
@@ -70,21 +68,19 @@ jobs:
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
-      - name: 登入仓库 ${{ env.REGISTRY }}
+      - name: 登入docker hub
+        uses: docker/login-action@v2.1.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: 登入Github仓库 ${{ env.REGISTRY }}
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v2.1.0
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Extract metadata (tags, labels) for Docker
-      # https://github.com/docker/metadata-action
-      - name: 解析Docker头 metadata
-        id: meta
-        uses: docker/metadata-action@v4.3.0
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: 构建并推送
@@ -93,9 +89,11 @@ jobs:
         with:
           context: .
           builder: ${{ steps.buildx.outputs.name }}
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            byz0825/corp-wechat-gptbot:latest
+            ghcr.io/baiyz0825/corp-wechat-gptbot:latest
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
@@ -194,8 +192,8 @@ jobs:
             docker stop gpt-webot 
             docker rm gpt-webot
             docker login ghcr.io -u ${{ secrets.DOCKER_DEPLOY_USERNAME }} -p ${{ secrets.DOCKER_DEPLOY_TOKEN }} 
-            docker pull ghcr.io/baiyz0825/corp-wechat-gptbot:main
-            docker run -d --name=gpt-webot --net=host -p 50008:50008 -e GIN_MODE=release -v /home/byz/gpt/config:/apps/config -v /home/byz/gpt/db:/apps/db -v /home/byz/gpt/logs:/apps/logs --restart=always ghcr.io/baiyz0825/corp-wechat-gptbot:main
+            docker pull byz0825/corp-wechat-gptbot:latest
+            docker run -d --name=gpt-webot --net=host -p 50008:50008 -e GIN_MODE=release -v /home/byz/gpt/config:/apps/config -v /home/byz/gpt/db:/apps/db -v /home/byz/gpt/logs:/apps/logs --restart=always byz0825/corp-wechat-gptbot:latest
             docker ps -al | grep gpt-webot
       - name: 部署成功WX消息
         id: deploy-machine-success-data-wx-msg

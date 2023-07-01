@@ -1,5 +1,5 @@
 systemConf:
-  proxy: xxxx# http代理地址
+  proxy: xxxx # http代理地址 形如 http://192.168.0.44:7890
   port: 50008 # 允许端口
   log: info # panic, fatal, error, warn, info, debug, trace
   callBackUrl: http://127.0.0.1 # 回调地址

@@ -4,7 +4,6 @@ LABEL maintainer="baiyz0825<byz0825@outlook.com>"
 ENV GO111MODULE=on \
     CGO_ENABLED=1 \
     GOOS=linux \
-    GOARCH=amd64 \
 	GOPROXY="https://goproxy.cn,direct"
 WORKDIR /apps
 COPY . /apps
