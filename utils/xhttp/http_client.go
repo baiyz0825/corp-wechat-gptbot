@@ -19,9 +19,6 @@ func init() {
 	HttpClient = &http.Client{
 		Timeout: time.Second * 60,
 	}
-	HttpClient.Transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
 	// 检查是否配置代理
 	proxy := config.GetSystemConf().Proxy
 	if len(proxy) > 0 {
@@ -29,12 +26,18 @@ func init() {
 		if CheckServer(parseUrl.Host) && err == nil {
 			xlog.Log.Info("代理Url获取成功，本次将使用代理")
 			HttpClient.Transport = &http.Transport{
+				Timeout:         time.Second * 120,
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+				Proxy:           http.ProxyURL(parseUrl),
 			}
 			return
 		}
-	} else {
-		xlog.Log.Infof("客户端Http代理未设置设置，本次将不使用代理")
+	} 
+	// 未设置代理或者不可用
+	xlog.Log.Infof("客户端Http代理未设置设置，本次将不使用代理")
+	HttpClient.Transport = &http.Transport{
+		Timeout:         time.Second * 120,
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	return
 }
