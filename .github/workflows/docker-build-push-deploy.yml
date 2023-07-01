@@ -57,8 +57,10 @@ jobs:
         uses: docker/setup-qemu-action@v2
       - name: Set up buildx
         uses: docker/setup-buildx-action@v2.5.0
-      - name: 支持平台
-        run: echo ${{ steps.buildx.outputs.platforms }}
+      - name: 镜像标签
+        run: |
+          echo ${{ vars.DOCKER_HUB_TAG }}
+          echo ${{ vars.GHCR_HUB_TAG }}
       - name: 查看构建器
         run: |
           echo "Name:      ${{ steps.buildx.outputs.name }}"
@@ -92,8 +94,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            byz0825/corp-wechat-gptbot:latest
-            ghcr.io/baiyz0825/corp-wechat-gptbot:latest
+            ${{ vars.DOCKER_HUB_TAG }}
+            ${{ vars.GHCR_HUB_TAG }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
